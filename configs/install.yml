@@ -1,0 +1,66 @@
+k8s:
+  master:
+    components:
+      - name: etcd
+        hosts:
+          - 192.168.58.129
+          - 192.168.58.130
+          - 192.168.58.131
+        dir: /opt/etcd
+      - name: api-server
+        hosts:
+          - 192.168.58.129
+          - 192.168.58.130
+          - 192.168.58.131
+        dir: /opt/api-server
+      - name: scheduler
+        hosts:
+          - 192.168.58.129
+          - 192.168.58.130
+          - 192.168.58.131
+        dir: /opt/scheduler
+      - name: controller-manager
+        hosts:
+          - 192.168.58.129
+          - 192.168.58.130
+          - 192.168.58.131
+        dir: /opt/controller-manager
+  node:
+    hosts:
+      - 192.168.58.129
+      - 192.168.58.130
+      - 192.168.58.131
+    components:
+      - name: kubelet
+        dir: /opt/kubelet
+      - name: kubproxy
+        dir: /opt/kube-proxy
+  plugin:
+    - name: coreDns
+      DNS: 172.16.0.10
+    - name: calico
+  CIDR:
+    serviceCIDR: 172.16.0.0/16
+    podCIDR: 10.100.0.0/16
+  certificate: 876000h
+
+docker:
+  yum-repo: http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+  data-root: /data/docker
+  registry-mirrors: https://mvaav0ar.mirror.aliyuncs.com
+
+haproxy:
+  hosts:
+    - 192.168.58.129
+    - 192.168.58.130
+    - 192.168.58.131
+  frontend-port: 16443
+
+
+keepalived:
+  hosts:
+    - 192.168.58.129
+    - 192.168.58.130
+    - 192.168.58.131
+  vip: 192.168.58.110
+  interface: eth0
