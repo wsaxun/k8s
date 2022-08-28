@@ -8,7 +8,7 @@ import (
 
 func main() {
 	packr.NewBox("./template")
-	data := utils.ParserYml("E:\\code\\go\\k8s\\configs\\install.yml")
+	data := utils.ParserYml("./configs/install.yml")
 	for k, v := range data {
 		fmt.Println(k, v)
 	}
