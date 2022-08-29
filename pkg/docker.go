@@ -12,14 +12,15 @@ type Docker struct {
 }
 
 func (d *Docker) InstallDocker(host string) {
-	box := packr.NewBox("./template")
+	box := packr.NewBox("../template")
 	daemonContext, _ := box.FindString("daemon.json")
 	utils.Render(d, daemonContext, "daemon.json")
 
 	dockerYml, _ := box.FindString("installDocker.yml")
 	content := struct {
-		host    string
+		Host    string
 		YumRepo string
-	}{host: host, YumRepo: d.YumRepo}
-	utils.Render(content, dockerYml, "installDocker.yml")
+	}{Host: host, YumRepo: d.YumRepo}
+	path := utils.Render(content, dockerYml, "installDocker.yml")
+	utils.Playbook(path)
 }

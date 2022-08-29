@@ -6,7 +6,7 @@ import (
 	"text/template"
 )
 
-func Render(data interface{}, templateStr, fileName string) {
+func Render(data interface{}, templateStr, fileName string) (path string) {
 	tmpl, err := template.New("t").Parse(templateStr)
 	defer tmpl.Clone()
 
@@ -19,4 +19,5 @@ func Render(data interface{}, templateStr, fileName string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	return "/tmp/" + fileName
 }
