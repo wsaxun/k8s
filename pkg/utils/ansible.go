@@ -62,3 +62,42 @@ func Playbook(yml string) {
 
 	fmt.Println(res.String())
 }
+
+
+func Test(yml string) {
+	var err error
+	var res *results.AnsiblePlaybookJSONResults
+
+	buff := new(bytes.Buffer)
+
+
+
+	executorTimeMeasurement := measure.NewExecutorTimeMeasurement(
+		execute.NewDefaultExecute(
+			execute.WithWrite(io.Writer(buff)),
+		),
+	)
+
+	playbooksList := []string{yml}
+	playbook := &playbook.AnsiblePlaybookCmd{
+		Playbooks:         playbooksList,
+		Exec:              executorTimeMeasurement,
+		StdoutCallback:    "json",
+	}
+
+	err = playbook.Run(context.TODO())
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	res, err = results.ParseJSONResultsStream(io.Reader(buff))
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(res.String())
+	fmt.Println("Duration: ", executorTimeMeasurement.Duration())
+
+
+}
+
