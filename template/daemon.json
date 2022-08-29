@@ -1,7 +1,7 @@
 {
-  "registry-mirrors": ["${RegistryMirrors}"],
+  "registry-mirrors": ["{{.RegistryMirrors}}"],
   "exec-opts": ["native.cgroupdriver=systemd"],
-  "data-root": "${DataRoot}",
+  "data-root": "{{.DataRoot}}",
   "log-driver": "json-file",
   "log-opts": {
     "max-size": "2048m",

@@ -1,0 +1,23 @@
+---
+- hosts： {{.host}}
+  remote_user: root
+    gather_facts: no                                        # 默认执行setup模块，禁用此setup选项
+    tasks:                                                    # 一个task 只能有一个模块元素
+      - name:  shell
+        shell: yum-config-manager --add-repo {{.YumRepo}} && yum makecache fast
+
+      - name: install docker
+        yum: name=docker-ce state=latest
+      - name: mkdir dir
+        file:
+          path: /etc/docker
+          state: directory
+          mode: '0755'
+      - name: config
+        copy:
+          src: /tmp/daemon.json
+          dest: /etc/docker
+      - name: start docker
+        service:
+          state: started
+          enable: yes
