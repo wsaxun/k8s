@@ -32,46 +32,11 @@ func Exec(host string, module string, args string) error {
 	return err
 }
 
-func Playbook(yml string) {
+func Playbook(yml string){
 	var err error
 	var res *results.AnsiblePlaybookJSONResults
 
 	buff := new(bytes.Buffer)
-	executorTimeMeasurement := measure.NewExecutorTimeMeasurement(
-		execute.NewDefaultExecute(
-			execute.WithWrite(io.Writer(buff)),
-		),
-	)
-
-	playbooksList := []string{yml}
-	playbooks := &playbook.AnsiblePlaybookCmd{
-		Playbooks:      playbooksList,
-		Exec:           executorTimeMeasurement,
-		StdoutCallback: "json",
-	}
-
-	err = playbooks.Run(context.TODO())
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	res, err = results.ParseJSONResultsStream(io.Reader(buff))
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	fmt.Println(res.String())
-}
-
-
-func Test(yml string) {
-	var err error
-	var res *results.AnsiblePlaybookJSONResults
-
-	buff := new(bytes.Buffer)
-
-
-
 	executorTimeMeasurement := measure.NewExecutorTimeMeasurement(
 		execute.NewDefaultExecute(
 			execute.WithWrite(io.Writer(buff)),
@@ -80,24 +45,20 @@ func Test(yml string) {
 
 	playbooksList := []string{yml}
 	playbook := &playbook.AnsiblePlaybookCmd{
-		Playbooks:         playbooksList,
-		Exec:              executorTimeMeasurement,
-		StdoutCallback:    "json",
+		Playbooks:      playbooksList,
+		Exec:           executorTimeMeasurement,
+		StdoutCallback: "json",
 	}
 
 	err = playbook.Run(context.TODO())
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Fatalln(err)
 	}
 
 	res, err = results.ParseJSONResultsStream(io.Reader(buff))
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	fmt.Println(res.String())
-	fmt.Println("Duration: ", executorTimeMeasurement.Duration())
-
-
 }
-

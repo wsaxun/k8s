@@ -36,25 +36,23 @@ k8s:
       - name: kubproxy
         dir: /opt/kube-proxy
   plugin:
-    - name: coreDns
-      DNS: 172.16.0.10
-    - name: calico
+    coreDns: 172.16.0.10
+    calico: 10.100.0.0/16
   CIDR:
     serviceCIDR: 172.16.0.0/16
-    podCIDR: 10.100.0.0/16
-  certificate: 876000h
+certificate: 876000h
 
 docker:
-  yum-repo: http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
-  data-root: /data/docker
-  registry-mirrors: https://mvaav0ar.mirror.aliyuncs.com
+  yumRepo: http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+  dataRoot: /data/docker
+  registryMirrors: https://mvaav0ar.mirror.aliyuncs.com
 
 haproxy:
   hosts:
     - 192.168.58.129
     - 192.168.58.130
     - 192.168.58.131
-  frontend-port: 16443
+  frontendPort: 16443
 
 
 keepalived:
@@ -64,3 +62,16 @@ keepalived:
     - 192.168.58.131
   vip: 192.168.58.110
   interface: eth0
+
+packages:
+  downloadDir: /tmp/packages
+  url:
+    - https://dl.k8s.io/v1.23.9/bin/linux/amd64/kube-controller-manager
+    - https://dl.k8s.io/v1.23.9/bin/linux/amd64/kube-apiserver
+    - https://dl.k8s.io/v1.23.9/bin/linux/amd64/kube-scheduler
+    - https://github.com/etcd-io/etcd/releases/download/v3.4.20/etcd-v3.4.20-linux-amd64.tar.gz
+    - https://dl.k8s.io/v1.23.9/bin/linux/amd64/kube-proxy
+    - https://dl.k8s.io/v1.23.9/bin/linux/amd64/kubelet
+    - https://dl.k8s.io/v1.23.9/bin/linux/amd64/kubectl
+    - https://pkg.cfssl.org/R1.2/cfssl_linux-amd64
+    - https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64

@@ -17,11 +17,11 @@ func (d *Docker) InstallDocker(host string) {
 	utils.Render(d, daemonContext, "daemon.json")
 
 	dockerYml, _ := box.FindString("installDocker.yml")
-	content := struct {
+	type info struct {
 		Host    string
 		YumRepo string
-	}{Host: host, YumRepo: d.YumRepo}
+	}
+	content := info{Host: host, YumRepo: d.YumRepo}
 	path := utils.Render(content, dockerYml, "installDocker.yml")
-	//utils.Playbook(path)
-	utils.Test(path)
+	utils.Playbook(path)
 }
