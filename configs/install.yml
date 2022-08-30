@@ -36,11 +36,13 @@ k8s:
       - name: kubproxy
         dir: /opt/kube-proxy
   plugin:
-    coreDns: 172.16.0.10
-    calico: 10.100.0.0/16
+    - name: coreDns
+      dns: 172.16.0.10
+    - name: calico
+      podCIDR: 10.100.0.0/16
   CIDR:
     serviceCIDR: 172.16.0.0/16
-certificate: 876000h
+  certificate: 876000h
 
 docker:
   yumRepo: http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
@@ -53,7 +55,6 @@ haproxy:
     - 192.168.58.130
     - 192.168.58.131
   frontendPort: 16443
-
 
 keepalived:
   hosts:

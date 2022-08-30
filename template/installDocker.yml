@@ -5,7 +5,6 @@
   tasks:                                                    # 一个task 只能有一个模块元素
     - name:  shell
       shell: yum-config-manager --add-repo {{.YumRepo}} && yum makecache fast
-
     - name: install docker
       yum: name=docker-ce state=latest
     - name: mkdir dir

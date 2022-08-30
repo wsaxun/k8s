@@ -1,18 +1,21 @@
 package main
 
 import (
-	"fmt"
+	"k8s/pkg"
 	"k8s/pkg/utils"
 )
 
 func main() {
 	// parser install yml
-	data := utils.ParserYml("./configs/install.yml")
-	for k, v := range data {
-		fmt.Println(k, v)
-	}
-	// download
+	config := utils.ParserYml("./configs/install.yml")
+	cache := config.Packages.DownloadDir
+	urls := config.Packages.Url
 
+	// download
+	utils.Download(cache, urls)
+
+	// generate cert
+	pkg.ConfigCsr(cache, config.K8s.Certificate)
 
 	// init env
 	//pkg.InitMasterEnv("127.0.0.1")
