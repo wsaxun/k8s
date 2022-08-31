@@ -5,6 +5,9 @@ import (
 	"k8s/pkg/utils"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strconv"
+	"strings"
 )
 
 func ConfigCsr(cache string, duration string) {
@@ -32,14 +35,61 @@ func ConfigCsr(cache string, duration string) {
 	}
 }
 
-func Cert(downloadCache string) {
+func Cert(downloadCache string, etcdhost, allHost string) {
 	fileName := "generateCert.yml"
 	box := packr.NewBox("../template")
 	certYml, _ := box.FindString(fileName)
 	type info struct {
 		DownloadDir string
+		Allhost     string
+		Etcdhost    string
 	}
-	content := info{DownloadDir: downloadCache}
+	content := info{DownloadDir: downloadCache, Allhost: allHost, Etcdhost: etcdhost}
 	path := utils.Render(content, certYml, fileName)
 	utils.Playbook(path)
+}
+
+func ApiServerCertHost(config utils.Config) string {
+	var hosts string = "127.0.0.1,kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster,kubernetes.default.svc.cluster.local"
+	vip := config.Keepalived.Vip
+	hosts = hosts + "," + vip
+	for _, v := range config.K8s.Master.Components {
+		if v.Name == "etcd" {
+			continue
+		}
+		for _, host := range v.Hosts {
+			if !strings.Contains(hosts, host) {
+				hosts = hosts + "," + host
+			}
+		}
+	}
+	cidr := config.K8s.CIDR.ServiceCIDR
+	ip := startIP(cidr)
+	hosts = hosts + "," + ip
+	return hosts
+}
+
+func EtcdHost(config utils.Config) string {
+	locahost := "127.0.0.1"
+	var hosts string = locahost
+	for _, v := range config.K8s.Master.Components {
+		if v.Name != "etcd" {
+			continue
+		}
+		for _, host := range v.Hosts {
+			hosts = hosts + "," + host
+		}
+	}
+	return hosts
+}
+
+func startIP(cidr string) string {
+	ipReg := `[0-9]{1,}\.[0-9]{1,}\.[0-9]{1,}\.[0-9]{1,}`
+	r, _ := regexp.Compile(ipReg)
+	ipStr := r.FindString(cidr)
+	tmp := strings.Split(ipStr, ".")
+	a, _ := strconv.Atoi(tmp[3])
+	a += 1
+	ip := tmp[0] + "." + tmp[1] + "." + tmp[2] + "." + string(a)
+	return ip
 }

@@ -19,7 +19,7 @@
            {{.DownloadDir}}/cfssl_*  gencert -ca={{.DownloadDir}}/kubernetes/pki/etcd/etcd-ca.pem \
                -ca-key={{.DownloadDir}}/kubernetes/pki/etcd/etcd-ca-key.pem \
                -config={{.DownloadDir}}/kubernetes/csr/ca-config.json \
-               -hostname={{.Allhost}} \
+               -hostname={{.Etcdhost}} \
                -profile=kubernetes \
                {{.DownloadDir}}/kubernetes/csr/etcd-csr.json | {{.DownloadDir}}/cfssljson_* \
                -bare {{.DownloadDir}}/kubernetes/pki/etcd/etcd

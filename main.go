@@ -16,7 +16,9 @@ func main() {
 
 	// generate cert
 	pkg.ConfigCsr(cache, config.K8s.Certificate)
-	pkg.Cert(cache)
+	allHost := pkg.ApiServerCertHost(config)
+	etcdHost := pkg.EtcdHost(config)
+	pkg.Cert(cache, etcdHost, allHost)
 
 	// init env
 	//pkg.InitMasterEnv("127.0.0.1")
