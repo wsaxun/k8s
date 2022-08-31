@@ -20,6 +20,9 @@ func main() {
 	etcdHost := pkg.EtcdHost(config)
 	pkg.Cert(cache, etcdHost, allHost)
 
+	// generate kubeconfig
+	pkg.KubeConfig(cache, config.Keepalived.Vip, config.Haproxy.FrontendPort)
+
 	// init env
 	//pkg.InitMasterEnv("127.0.0.1")
 	//pkg.InitNodeEnv("127.0.0.1")
