@@ -90,6 +90,6 @@ func startIP(cidr string) string {
 	tmp := strings.Split(ipStr, ".")
 	a, _ := strconv.Atoi(tmp[3])
 	a += 1
-	ip := tmp[0] + "." + tmp[1] + "." + tmp[2] + "." + string(a)
+	ip := tmp[0] + "." + tmp[1] + "." + tmp[2] + "." + strconv.Itoa(a)
 	return ip
 }
