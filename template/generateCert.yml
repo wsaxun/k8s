@@ -74,5 +74,5 @@
           {{.DownloadDir}}/cfssl_* gencert -ca={{.DownloadDir}}/kubernetes/pki/ca.pem \
             -ca-key={{.DownloadDir}}/kubernetes/pki/ca-key.pem \
             -config={{.DownloadDir}}/kubernetes/csr/ca-config.json \
-            -profile=kubernetes {{.DownloadDir}}/kubernetes/csr/admin-csr.json |/root/k8s-v1.23.9/cfssljson_linux-amd64 \
+            -profile=kubernetes {{.DownloadDir}}/kubernetes/csr/admin-csr.json |{{.DownloadDir}}/cfssljson_* \
             -bare {{.DownloadDir}}/kubernetes/pki/admin
