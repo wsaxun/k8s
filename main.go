@@ -16,6 +16,7 @@ func main() {
 
 	// generate cert
 	pkg.ConfigCsr(cache, config.K8s.Certificate)
+	pkg.Cert(cache)
 
 	// init env
 	//pkg.InitMasterEnv("127.0.0.1")

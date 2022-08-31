@@ -13,15 +13,15 @@
       shell:
         cmd: |
 #           /root/k8s-v1.23.9/cfssl_linux-amd64 gencert -initca etcd-ca-csr.json | /root/k8s-v1.23.9/cfssljson_linux-amd64 -bare /etc/kubernetes/pki/etcd/etcd-ca
-           {{.DownloadDir}}/cfssl_* gencert -initca {{.DownloadDir}}/kubernetes/pki/etcd-ca-csr.json |  {{.DownloadDir}}/cfssljson_* \
+           {{.DownloadDir}}/cfssl_* gencert -initca {{.DownloadDir}}/kubernetes/csr/etcd-ca-csr.json |  {{.DownloadDir}}/cfssljson_* \
                -bare {{.DownloadDir}}/kubernetes/pki/etcd/etcd-ca
 #            /root/k8s-v1.23.9/cfssl_linux-amd64 gencert -ca=/etc/kubernetes/pki/etcd/etcd-ca.pem -ca-key=/etc/kubernetes/pki/etcd/etcd-ca-key.pem -config=ca-config.json -hostname=127.0.0.1,k8s-master01,k8s-master02,k8s-master03,192.168.58.129,192.168.58.130,192.168.58.131 -profile=kubernetes etcd-csr.json |/root/k8s-v1.23.9/cfssljson_linux-amd64 -bare /etc/kubernetes/pki/etcd/etcd
            {{.DownloadDir}}/cfssl_*  gencert -ca={{.DownloadDir}}/kubernetes/pki/etcd/etcd-ca.pem \
                -ca-key={{.DownloadDir}}/kubernetes/pki/etcd/etcd-ca-key.pem \
-               -config={{.DownloadDir}}/kubernetes/pki/ca-config.json \
+               -config={{.DownloadDir}}/kubernetes/csr/ca-config.json \
                -hostname={{.Allhost}} \
                -profile=kubernetes \
-               {{.DownloadDir}}/kubernetes/pki/etcd-csr.json | {{.DownloadDir}}/cfssljson_* \
+               {{.DownloadDir}}/kubernetes/csr/etcd-csr.json | {{.DownloadDir}}/cfssljson_* \
                -bare {{.DownloadDir}}/kubernetes/pki/etcd/etcd
 
 ---
@@ -38,7 +38,7 @@
       shell:
         cmd: |
 #          /root/k8s-v1.23.9/cfssl_linux-amd64 gencert -initca ca-csr.json |/root/k8s-v1.23.9/cfssljson_linux-amd64 -bare /etc/kubernetes/pki/ca
-           {{.DownloadDir}}/cfssl_* gencert -initca {{.DownloadDir}}/kubernetes/pki/ca-csr.json |  {{.DownloadDir}}/cfssljson_* \
+           {{.DownloadDir}}/cfssl_* gencert -initca {{.DownloadDir}}/kubernetes/csr/ca-csr.json |  {{.DownloadDir}}/cfssljson_* \
            -bare {{.DownloadDir}}/kubernetes/pki/ca
     - name: generate apiserver cert
       shell:
@@ -46,10 +46,10 @@
 #          /root/k8s-v1.23.9/cfssl_linux-amd64 gencert -ca=/etc/kubernetes/pki/etcd/etcd-ca.pem -ca-key=/etc/kubernetes/pki/etcd/etcd-ca-key.pem -config=ca-config.json -hostname=127.0.0.1,k8s-master01,k8s-master02,k8s-master03,192.168.58.129,192.168.58.130,192.168.58.131 -profile=kubernetes etcd-csr.json |/root/k8s-v1.23.9/cfssljson_linux-amd64 -bare /etc/kubernetes/pki/etcd/etcd
            {{.DownloadDir}}/cfssl_*  gencert -ca={{.DownloadDir}}/kubernetes/pki/ca.pem \
            -ca-key={{.DownloadDir}}/kubernetes/pki/ca-key.pem \
-           -config={{.DownloadDir}}/kubernetes/pki/ca-config.json \
+           -config={{.DownloadDir}}/kubernetes/csr/ca-config.json \
            -hostname={{.Allhost}} \
            -profile=kubernetes \
-           {{.DownloadDir}}/kubernetes/pki/apiserver-csr.json | {{.DownloadDir}}/cfssljson_* \
+           {{.DownloadDir}}/kubernetes/csr/apiserver-csr.json | {{.DownloadDir}}/cfssljson_* \
            -bare {{.DownloadDir}}/kubernetes/pki/apiserver
 
 ---
@@ -66,7 +66,7 @@
       shell:
         cmd: |
   #         /root/k8s-v1.23.9/cfssl_linux-amd64 gencert -initca front-proxy-ca-csr.json |/root/k8s-v1.23.9/cfssljson_linux-amd64 -bare /etc/kubernetes/pki/front-proxy-ca
-           {{.DownloadDir}}/cfssl_* gencert -initca {{.DownloadDir}}/kubernetes/pki/front-proxy-ca-csr.json |  {{.DownloadDir}}/cfssljson_* \
+           {{.DownloadDir}}/cfssl_* gencert -initca {{.DownloadDir}}/kubernetes/csr/front-proxy-ca-csr.json |  {{.DownloadDir}}/cfssljson_* \
           -bare {{.DownloadDir}}/kubernetes/pki/front-proxy-ca
     - name: generate  front-proxy  cert
       shell:
@@ -74,9 +74,9 @@
 #          /root/k8s-v1.23.9/cfssl_linux-amd64 gencert -ca=/etc/kubernetes/pki/front-proxy-ca.pem -ca-key=/etc/kubernetes/pki/front-proxy-ca-key.pem -config=ca-config.json  -profile=kubernetes front-proxy-client-csr.json |/root/k8s-v1.23.9/cfssljson_linux-amd64 -bare /etc/kubernetes/pki/front-proxy-client
            {{.DownloadDir}}/cfssl_*  gencert -ca={{.DownloadDir}}/kubernetes/pki/front-proxy-ca.pem \
            -ca-key={{.DownloadDir}}/kubernetes/pki/front-proxy-ca-key.pem \
-           -config={{.DownloadDir}}/kubernetes/pki/ca-config.json \
+           -config={{.DownloadDir}}/kubernetes/csr/ca-config.json \
            -profile=kubernetes \
-           {{.DownloadDir}}/kubernetes/pki/front-proxy-client-csr.json | {{.DownloadDir}}/cfssljson_* \
+           {{.DownloadDir}}/kubernetes/csr/front-proxy-client-csr.json | {{.DownloadDir}}/cfssljson_* \
            -bare {{.DownloadDir}}/kubernetes/pki/front-proxy-client
 
 ---
@@ -95,7 +95,7 @@
 #          /root/k8s-v1.23.9/cfssl_linux-amd64 gencert -ca=/etc/kubernetes/pki/ca.pem -ca-key=/etc/kubernetes/pki/ca-key.pem  -config=ca-config.json -profile=kubernetes manager-csr.json |/root/k8s-v1.23.9/cfssljson_linux-amd64 -bare /etc/kubernetes/pki/controller-manager
            {{.DownloadDir}}/cfssl_*  gencert -ca={{.DownloadDir}}/kubernetes/pki/ca.pem \
            -ca-key={{.DownloadDir}}/kubernetes/pki/ca-key.pem \
-           -config={{.DownloadDir}}/kubernetes/pki/ca-config.json \
+           -config={{.DownloadDir}}/kubernetes/csr/ca-config.json \
            -profile=kubernetes \
-           {{.DownloadDir}}/kubernetes/pki/manager-csr.json | {{.DownloadDir}}/cfssljson_* \
+           {{.DownloadDir}}/kubernetes/csr/manager-csr.json | {{.DownloadDir}}/cfssljson_* \
            -bare {{.DownloadDir}}/kubernetes/pki/controller-manager

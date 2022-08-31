@@ -8,10 +8,10 @@ import (
 )
 
 func ConfigCsr(cache string, duration string) {
-	pkiPath := filepath.Join(cache, "/kubernetes/pki/")
+	pkiPath := filepath.Join(cache, "/kubernetes/csr/")
 	_, err := os.Stat(pkiPath)
 	if err != nil {
-		_ := os.MkdirAll(pkiPath, 0755)
+		os.MkdirAll(pkiPath, 0755)
 	}
 
 	var Info struct {
@@ -27,7 +27,19 @@ func ConfigCsr(cache string, duration string) {
 	for _, v := range files {
 		context, _ := box.FindString(v)
 		path := utils.Render(Info, context, v)
-		_ := os.Rename(path, filepath.Join(pkiPath, v))
+		os.Rename(path, filepath.Join(pkiPath, v))
 
 	}
+}
+
+func Cert(downloadCache string) {
+	fileName := "generateCert.yml"
+	box := packr.NewBox("../template")
+	certYml, _ := box.FindString(fileName)
+	type info struct {
+		DownloadDir string
+	}
+	content := info{DownloadDir: downloadCache}
+	path := utils.Render(content, certYml, fileName)
+	utils.Playbook(path)
 }
