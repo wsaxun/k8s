@@ -12,11 +12,10 @@ type Docker struct {
 }
 
 func (d *Docker) InstallDocker(host string) {
-	templateName := "daemon.json"
 	ymlName := "installDocker.yml"
 	box := packr.NewBox("../template")
-	daemonContext, _ := box.FindString(templateName)
-	utils.Render(d, daemonContext, templateName)
+	daemonContext, _ := box.FindString("softwareConfig/daemon.json")
+	utils.Render(d, daemonContext, "daemon.json")
 
 	dockerYml, _ := box.FindString(ymlName)
 	type info struct {

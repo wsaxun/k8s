@@ -3,6 +3,7 @@ package main
 import (
 	"k8s/pkg"
 	"k8s/pkg/utils"
+	"strconv"
 )
 
 func main() {
@@ -23,6 +24,18 @@ func main() {
 	// generate kubeconfig
 	pkg.KubeConfig(cache, config.Keepalived.Vip, config.Haproxy.FrontendPort)
 
+	// install haproxy
+	haproxyHost := make(map[string]string)
+	for k, v := range config.Haproxy.Hosts {
+		haproxyHost["haproxy"+strconv.Itoa(k+1)] = v
+	}
+
+	haproxy := pkg.Haproxy{
+		Port:     config.Haproxy.FrontendPort,
+		HostInfo: haproxyHost,
+	}
+
+	haproxy.InstallHaproxy("127.0.0.1")
 	// init env
 	//pkg.InitMasterEnv("127.0.0.1")
 	//pkg.InitNodeEnv("127.0.0.1")
