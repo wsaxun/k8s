@@ -1,0 +1,64 @@
+---
+# generate kubconfig
+
+- hosts: 127.0.0.1
+  remote_user: root
+  gather_facts: no
+  tasks:
+    - name: generate controller-manager kubeconfig
+      shell:
+        cmd: |
+          {{.DownloadDir}}/kubectl config set-cluster kubernetes \
+           --certificate-authority={{.DownloadDir}}/kubernetes/pki/ca.pem \
+           --embed-certs=true --server=https://{{.VIP}}:{{.Port}} \
+           --kubeconfig={{.DownloadDir}}/kubernetes/controller-manager.kubeconfig
+          {{.DownloadDir}}/kubectl config set-context system:kube-controller-manager@kubernetes  \
+           --cluster=kubernetes --user=system:kube-controller-manager \
+           --kubeconfig={{.DownloadDir}}/kubernetes/controller-manager.kubeconfig
+          {{.DownloadDir}}/kubectl config set-credentials system:kube-controller-manager  \
+           --client-certificate={{.DownloadDir}}/kubernetes/pki/controller-manager.pem \
+           --client-key={{.DownloadDir}}/kubernetes/pki/controller-manager-key.pem \
+           --embed-certs=true  \
+           --kubeconfig={{.DownloadDir}}/kubernetes/controller-manager.kubeconfig
+          {{.DownloadDir}}/kubectl config use-context system:kube-controller-manager@kubernetes \
+           --kubeconfig={{.DownloadDir}}/kubernetes/controller-manager.kubeconfig
+    - name: genrate scheduler kubeconfig
+      shell:
+        cmd: |
+          {{.DownloadDir}}/kubectl config set-cluster kubernetes --certificate-authority={{.DownloadDir}}/kubernetes/pki/ca.pem \
+            --embed-certs=true \
+            --server=https://{{.VIP}}:{{.Port}} \
+            --kubeconfig={{.DownloadDir}}/kubernetes/scheduler.kubeconfig
+          {{.DownloadDir}}/kubectl config set-context system:kube-scheduler@kubernetes  --cluster=kubernetes \
+            --user=system:kube-scheduler --kubeconfig={{.DownloadDir}}/kubernetes/scheduler.kubeconfig
+          {{.DownloadDir}}/kubectl config set-credentials system:kube-scheduler  \
+            --client-certificate={{.DownloadDir}}/kubernetes/pki/scheduler.pem \
+            --client-key={{.DownloadDir}}/kubernetes/pki/scheduler-key.pem \
+            --embed-certs=true  \
+            --kubeconfig={{.DownloadDir}}/kubernetes/scheduler.kubeconfig
+          {{.DownloadDir}}/kubectl config use-context system:kube-scheduler@kubernetes \
+            --kubeconfig={{.DownloadDir}}/kubernetes/scheduler.kubeconfig
+    - name: genrate admin kubeconfig
+      shell:
+        cmd: |
+          {{.DownloadDir}}/kubectl config set-cluster kubernetes \
+            --certificate-authority= {{.DownloadDir}}/kubernetes/pki/ca.pem \
+            --embed-certs=true \
+            --server=https://{{.VIP}}:{{.Port}} \
+            --kubeconfig={{.DownloadDir}}/kubernetes/admin.kubeconfig
+          {{.DownloadDir}}/kubectl config set-context kubernetes-admin@kubernetes  \
+            --cluster=kubernetes \
+            --user=kubernetes-admin \
+            --kubeconfig={{.DownloadDir}}/kubernetes/admin.kubeconfig
+          {{.DownloadDir}}/kubectl config set-credentials  kubernetes-admin \
+            --client-certificate={{.DownloadDir}}/kubernetes/pki/admin.pem \
+            --client-key={{.DownloadDir}}/kubernetes/pki/admin-key.pem \
+            --embed-certs=true  \
+            --kubeconfig={{.DownloadDir}}/kubernetes/admin.kubeconfig
+          {{.DownloadDir}}/kubectl config use-context  kubernetes-admin@kubernetes \
+            --kubeconfig={{.DownloadDir}}/kubernetes/admin.kubeconfig
+    - name: genrate serviceAccoount token
+      shell:
+        cmd: |
+          openssl genrsa -out {{.DownloadDir}}/kubernetes/pki/sa.key 2048
+          openssl rsa -in {{.DownloadDir}}/kubernetes/pki/sa.key -pubout -out {{.DownloadDir}}/kubernetes/pki/sa.pub
