@@ -38,16 +38,18 @@ func main() {
 		Port:     config.Haproxy.FrontendPort,
 		HostInfo: haproxyHost,
 	}
-	haproxy.InstallHaproxy("127.0.0.1", inventory)
+	haproxy.InstallHaproxy("haproxy", inventory)
 
 	// init env
-	//pkg.InitMasterEnv("127.0.0.1", inventory)
-	//pkg.InitNodeEnv("127.0.0.1", inventory)
-	//
+	//pkg.InitMasterEnv("master", inventory)
+	//pkg.InitNodeEnv("node", inventory)
+
 	//docker := pkg.Docker{
 	//	YumRepo:         "http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo",
 	//	DataRoot:        "/var/lib/docker",
 	//	RegistryMirrors: "https://mvaav0ar.mirror.aliyuncs.com",
 	//}
-	//docker.InstallDocker("127.0.0.1", inventory)
+	//docker.InstallDocker("master", inventory)
+	//docker.InstallDocker("node", inventory)
+
 }

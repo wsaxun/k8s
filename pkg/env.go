@@ -22,6 +22,6 @@ func InitMasterEnv(host string, inventory string) {
 	initEnv(host, "initMaster.yml", inventory)
 }
 
-func InitNodeEnv(host string) {
+func InitNodeEnv(host string, inventory string) {
 	initEnv(host, "initNode.yml", inventory)
 }

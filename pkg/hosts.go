@@ -31,7 +31,7 @@ func Inventory(config utils.Config) string {
 		case "etcd":
 			etcdHost = v.Hosts
 			allHost = append(allHost, etcdHost...)
-		case " api-server":
+		case "api-server":
 			apiServerHost = v.Hosts
 			allHost = append(allHost, apiServerHost...)
 		case "scheduler":
