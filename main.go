@@ -40,6 +40,14 @@ func main() {
 	}
 	haproxy.InstallHaproxy("haproxy", inventory)
 
+	// install keepalived
+	// TODO
+	keepalived := pkg.Keepalived{
+		Interface: config.Keepalived.Interface,
+		Host:      config.Keepalived.Hosts,
+	}
+	keepalived.InstallKeepalived("keepalived", inventory)
+
 	// init env
 	//pkg.InitMasterEnv("master", inventory)
 	//pkg.InitNodeEnv("node", inventory)
