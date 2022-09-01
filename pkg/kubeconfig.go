@@ -5,7 +5,7 @@ import (
 	"k8s/pkg/utils"
 )
 
-func KubeConfig(downloadCache string, vip string, port int) {
+func KubeConfig(downloadCache string, vip string, port int, inventory string) {
 	fileName := "kubeconfig.yml"
 	box := packr.NewBox("../template")
 	kubeYml, _ := box.FindString(fileName)
@@ -16,5 +16,5 @@ func KubeConfig(downloadCache string, vip string, port int) {
 	}
 	content := info{DownloadDir: downloadCache, VIP: vip, Port: port}
 	path := utils.Render(content, kubeYml, fileName)
-	utils.Playbook(path)
+	utils.Playbook(path, inventory)
 }

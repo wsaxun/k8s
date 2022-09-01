@@ -1,0 +1,39 @@
+[master]
+{{range $i, $v := .Master}}
+{{$v}}
+{{end}}
+
+[etcd]
+{{range $i, $v := .EtcdHost}}
+{{$v}}
+{{end}}
+
+[api-server]
+{{range $i, $v := .ApiServerHost}}
+{{$v}}
+{{end}}
+
+[scheduler]
+{{range $i, $v := .SchedulerHost}}
+{{$v}}
+{{end}}
+
+[controller-manager]
+{{range $i, $v := .ControllerManagerHost}}
+{{$v}}
+{{end}}
+
+[node]
+{{range $i, $v := .NodeHost}}
+{{$v}}
+{{end}}
+
+[haproxy]
+{{range $i, $v := .HaproxyHost}}
+{{$v}}
+{{end}}
+
+[keepalived]
+{{range $i, $v := .KeepalivedHost}}
+{{$v}}
+{{end}}

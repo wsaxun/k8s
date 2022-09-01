@@ -35,7 +35,7 @@ func ConfigCsr(cache string, duration string) {
 	}
 }
 
-func Cert(downloadCache string, etcdhost, allHost string) {
+func Cert(downloadCache string, etcdhost, allHost string, inventory string) {
 	fileName := "generateCert.yml"
 	box := packr.NewBox("../template")
 	certYml, _ := box.FindString(fileName)
@@ -46,7 +46,7 @@ func Cert(downloadCache string, etcdhost, allHost string) {
 	}
 	content := info{DownloadDir: downloadCache, Allhost: allHost, Etcdhost: etcdhost}
 	path := utils.Render(content, certYml, fileName)
-	utils.Playbook(path)
+	utils.Playbook(path, inventory)
 }
 
 func ApiServerCertHost(config utils.Config) string {

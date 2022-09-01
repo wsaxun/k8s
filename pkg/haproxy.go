@@ -10,18 +10,18 @@ type Haproxy struct {
 	HostInfo map[string]string
 }
 
-func (h *Haproxy) InstallHaproxy(host string) {
-	//ymlName := "haproxy.yml"
+func (h *Haproxy) InstallHaproxy(host string, inventory string) {
+	ymlName := "haproxy.yml"
 	box := packr.NewBox("../template")
 	context, _ := box.FindString("softwareConfig/haproxy.cfg")
 	utils.Render(h, context, "haproxy.cfg")
 
-	//yml, _ := box.FindString(ymlName)
-	//type info struct {
-	//	Host    string
-	//	YumRepo string
-	//}
-	//content := info{Host: host, YumRepo: d.YumRepo}
+	yml, _ := box.FindString(ymlName)
+	type info struct {
+		Host string
+	}
+	content := info{Host: host}
+	utils.Render(content, yml, ymlName)
 	//path := utils.Render(content, yml, ymlName)
-	//utils.Playbook(path)
+	//utils.Playbook(path, inventory)
 }

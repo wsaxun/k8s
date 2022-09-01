@@ -5,7 +5,7 @@ import (
 	"k8s/pkg/utils"
 )
 
-func initEnv(host string, yml string) {
+func initEnv(host string, yml string, inventory string) {
 	type info struct {
 		Host string
 	}
@@ -15,13 +15,13 @@ func initEnv(host string, yml string) {
 	box := packr.NewBox("../template")
 	initMasterYml, _ := box.FindString(yml)
 	path := utils.Render(hosts, initMasterYml, yml)
-	utils.Playbook(path)
+	utils.Playbook(path, inventory)
 }
 
-func InitMasterEnv(host string) {
-	initEnv(host, "initMaster.yml")
+func InitMasterEnv(host string, inventory string) {
+	initEnv(host, "initMaster.yml", inventory)
 }
 
 func InitNodeEnv(host string) {
-	initEnv(host, "initNode.yml")
+	initEnv(host, "initNode.yml", inventory)
 }

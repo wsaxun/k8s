@@ -32,9 +32,13 @@ func Exec(host string, module string, args string) error {
 	return err
 }
 
-func Playbook(yml string){
+func Playbook(yml string, hosts string) {
 	var err error
 	var res *results.AnsiblePlaybookJSONResults
+
+	ansiblePlaybookOptions := &playbook.AnsiblePlaybookOptions{
+		Inventory: hosts,
+	}
 
 	buff := new(bytes.Buffer)
 	executorTimeMeasurement := measure.NewExecutorTimeMeasurement(
@@ -48,6 +52,7 @@ func Playbook(yml string){
 		Playbooks:      playbooksList,
 		Exec:           executorTimeMeasurement,
 		StdoutCallback: "json",
+		Options:        ansiblePlaybookOptions,
 	}
 
 	err = playbook.Run(context.TODO())

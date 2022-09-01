@@ -11,7 +11,7 @@ type Docker struct {
 	RegistryMirrors string
 }
 
-func (d *Docker) InstallDocker(host string) {
+func (d *Docker) InstallDocker(host string, inventory string) {
 	ymlName := "installDocker.yml"
 	box := packr.NewBox("../template")
 	daemonContext, _ := box.FindString("softwareConfig/daemon.json")
@@ -24,5 +24,5 @@ func (d *Docker) InstallDocker(host string) {
 	}
 	content := info{Host: host, YumRepo: d.YumRepo}
 	path := utils.Render(content, dockerYml, ymlName)
-	utils.Playbook(path)
+	utils.Playbook(path, inventory)
 }
