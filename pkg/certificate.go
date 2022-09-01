@@ -21,7 +21,7 @@ func ConfigCsr(cache string, duration string) {
 		Duration string
 	}
 	Info.Duration = duration
-	box := packr.NewBox("../template/pki")
+	box := packr.NewBox("../template/csr")
 
 	var files = []string{"admin-csr.json", "apiserver-csr.json", "ca-config.json", "ca-csr.json", "etcd-ca-csr.json",
 		"etcd-csr.json", "front-proxy-ca-csr.json", "front-proxy-client-csr.json", "kube-proxy-csr.json",
