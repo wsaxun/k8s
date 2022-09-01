@@ -8,11 +8,13 @@ import (
 type Keepalived struct {
 	Interface string
 	Host      []string
+	Vip       string
 }
 
 func (k *Keepalived) InstallKeepalived(host string, inventory string) {
 	k.config()
 	ymlName := "keepalived.yml"
+	box := packr.NewBox("../template")
 	yml, _ := box.FindString(ymlName)
 	type info struct {
 		Host    string
@@ -36,6 +38,7 @@ func (k *Keepalived) config() {
 		Interface string
 		HostInfo  []string
 		LocalHost string
+		Vip       string
 	}
 
 	tplData := data{
@@ -44,6 +47,7 @@ func (k *Keepalived) config() {
 		Interface: k.Interface,
 		LocalHost: "",
 		HostInfo:  k.Host,
+		Vip:       k.Vip,
 	}
 	for index, host := range k.Host {
 		tplData.Level += index

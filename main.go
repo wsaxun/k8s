@@ -45,6 +45,7 @@ func main() {
 	keepalived := pkg.Keepalived{
 		Interface: config.Keepalived.Interface,
 		Host:      config.Keepalived.Hosts,
+		Vip:       config.Keepalived.Vip,
 	}
 	keepalived.InstallKeepalived("keepalived", inventory)
 
