@@ -1,0 +1,42 @@
+---
+- hosts: {{.Host}}
+  remote_user: root
+  gather_facts: no                                        # 默认执行setup模块，禁用此setup选项
+  tasks:                                                    # 一个task 只能有一个模块元素
+    - name:   sync kubernets
+      copy:
+        src: {{.downloadDir}}/kubernetes
+        dest: /etc
+    - name: mkdir binary dir
+      file:
+        path: {{.Dir}}
+        state: directory
+        mode: '0755'
+    - name: copy bianry file
+      copy:
+        src: {{.downloadDir}}/etcd-*.tar.gz
+        dest: /tmp
+    - name: unarchive
+      unarchive:
+        src: /tmp/etcd-*.tar.gz
+        dest: /tmp
+    - name: mv file
+        shell: mv /tmp/etcd /tmp/etcdctl {{.Dir}}
+    - name: copy service
+      copy:
+        src: /tmp/etcd.service
+        dest: /usr/lib/systemd/system
+    - name: daemon-reload
+      shell: systemctl daemon-reload
+{{range $i, $v :=  .AllHost}}
+- hosts: {{$v}}
+    - name: config
+      copy:
+        src: /tmp/etcd.config.yml_{{$v}}
+        dest: {{.Dir}}/etcd.config.yml
+    - name: start etcd
+      service:
+        name: etcd
+        state: started
+        enabled: yes
+{{end}}

@@ -17,9 +17,10 @@ type Config struct {
 
 // Components
 type Components struct {
-	Name  string   `yaml:"name"`
-	Hosts []string `yaml:"hosts"`
-	Dir   string   `yaml:"dir"`
+	Name    string   `yaml:"name"`
+	Hosts   []string `yaml:"hosts"`
+	Dir     string   `yaml:"dir"`
+	DataDir string   `yaml:"dataDir"`
 }
 
 // Node

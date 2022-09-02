@@ -1,0 +1,79 @@
+# 该值被该节点吃的--initial-cluster参数引用
+name: {{.Name}}
+data-dir:
+# 专用的wal目录的路径
+wal-dir: {{.DataDir}}/wal
+# 触发一个快照到磁盘的已提交交易的数量
+snapshot-count: 5000
+# 心跳间隔(毫秒为单位)
+heartbeat-interval: 100
+# 选举超时时间(毫秒为单位)
+election-timeout: 1000
+# 后端大小超过给定配额时引发警报
+quota-backend-bytes: 0
+# 监听在对等节点流量上的URL列表
+listen-peer-urls: 'https://{{.LocalHost}}:2380'
+# 监听在客户端流量上的URL列表
+listen-client-urls: 'https://{{.LocalHost}}:2379,http://127.0.0.1:2379'
+# 保留的快照文件最大数量
+max-snapshots: 3
+# 保留的wal文件最大数量
+max-wals: 5
+# 以逗号分隔的CORS来源白名单（跨来源资源共享）
+cors:
+# 此成员的对等URL的列表，以通告到集群的其余部分。 这些地址用于在集群周围传送etcd数据。 所有集群成员必须至少有一个路由。 这些URL可以包含域名
+initial-advertise-peer-urls: 'https://{{.LocalHost}}:2380'
+# 此成员的客户端URL的列表，这些URL广播给集群的其余部分
+advertise-client-urls: 'https://{{.LocalHost}}:2379'
+# 发现URL用于引导启动集群
+discovery:
+# 发现服务失败时的预期行为(“退出”或“代理”)。“代理”仅支持v2 API
+discovery-fallback: 'proxy'
+# HTTP代理，用于发现服务的流量
+discovery-proxy:
+# 用于引导集群的DNS srv域
+discovery-srv:
+# 启动集群的初始化配置
+#initial-cluster: 'k8s-master01=https://192.168.58.129:2380,k8s-master02=https://192.168.58.130:2380,k8s-master03=https://192.168.58.131:2380'
+initial-cluster: {{.Cluster}}
+# 引导期间etcd群集的初始集群令牌
+initial-cluster-token: 'etcd-k8s-cluster'
+# 初始群集状态（“新”或“现有”）
+initial-cluster-state: 'new'
+# 拒绝可能导致quorum丢失的重新配置请求
+strict-reconfig-check: false
+# 接受etcd V2客户端请求
+enable-v2: true
+# 过HTTP服务器启用运行时分析数据
+enable-pprof: true
+# 代理模式设置(”off","readonly"或者"on")
+proxy: 'off'
+# 在重新考虑端点请求之前，端点将保持故障状态的时间（以毫秒为单位）
+proxy-failure-wait: 5000
+# 节点刷新间隔的时间（以毫秒为单位）
+proxy-refresh-interval: 30000
+# 拨号超时的时间（以毫秒为单位），或0以禁用超时
+proxy-dial-timeout: 1000
+# 写入超时的时间（以毫秒为单位）或禁用超时的时间为0
+proxy-write-timeout: 5000
+# 读取超时的时间（以毫秒为单位），或者为0以禁用超时
+proxy-read-timeout: 0
+client-transport-security:
+  cert-file: '/etc/kubernetes/pki/etcd/etcd.pem'
+  key-file: '/etc/kubernetes/pki/etcd/etcd-key.pem'
+  client-cert-auth: true
+  trusted-ca-file: '/etc/kubernetes/pki/etcd/etcd-ca.pem'
+  auto-tls: true
+peer-transport-security:
+  cert-file: '/etc/kubernetes/pki/etcd/etcd.pem'
+  key-file: '/etc/kubernetes/pki/etcd/etcd-key.pem'
+  peer-client-cert-auth: true
+  trusted-ca-file: '/etc/kubernetes/pki/etcd/etcd-ca.pem'
+  auto-tls: true
+debug: false
+# 将各个etcd子软件包设置为特定的日志级别
+log-package-levels:
+# 指定“ stdout”或“ stderr”以跳过日志记录，即使在systemd或逗号分隔的输出目标列表下运行时也是如此
+log-outputs: [default]
+# 强制创建一个新的单成员群集
+force-new-cluster: false

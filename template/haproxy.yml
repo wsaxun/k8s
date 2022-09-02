@@ -13,6 +13,6 @@
         dest: /etc/haproxy
     - name: start docker
       service:
-        name: docker
+        name: haproxy
         state: started
         enabled: yes
