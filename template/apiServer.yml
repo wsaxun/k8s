@@ -21,7 +21,7 @@
     - name: copy service
       copy:
         src: /tmp/kube-apiserver.service_{{$v}}
-        dest: /usr/lib/systemd/system
+        dest: /usr/lib/systemd/system/kube-apiserver.service
     - name: systemctl daemon-reload
       shell: systemctl daemon-reload
     - name: start apiserver
