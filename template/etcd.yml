@@ -21,7 +21,10 @@
         src: /tmp/etcd-*.tar.gz
         dest: /tmp
     - name: mv file
-        shell: /usr/bin/mv -f /tmp/etcd-*/etcd /tmp/etcd-*/etcdctl {{.Dir}}
+        shell:
+          cmd: |
+            /usr/bin/mv -f /tmp/etcd-*/etcd /tmp/etcd-*/etcdctl {{.Dir}}
+            chmod +x {{.Dir}}/etcd*
     - name: copy service
       copy:
         src: /tmp/etcd.service

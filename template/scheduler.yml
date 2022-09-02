@@ -16,6 +16,7 @@
       copy:
         src: {{.DownloadDir}}/kube-scheduler
         dest: {{.Dir}}
+        mode: '0755'
     - name: copy service
       copy:
         src: /tmp/kube-scheduler.service
