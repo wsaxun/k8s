@@ -6,7 +6,7 @@ After=network.target
 [Service]
 ExecStart={{.Dir}}/kube-apiserver \
       --v=2  \
-      --logtostderr=true  \
+      --logtostderr=false  \
       --allow-privileged=true  \
       --bind-address=0.0.0.0  \
       --secure-port=6443  \
@@ -37,10 +37,12 @@ ExecStart={{.Dir}}/kube-apiserver \
       --requestheader-group-headers=X-Remote-Group  \
       --requestheader-extra-headers-prefix=X-Remote-Extra-  \
       --requestheader-username-headers=X-Remote-User \
-      --audit-log-format=json
-      --audit-log-path={{.Dir}}/log/kubernetes-audit
-      --audit-log-maxage=30
-      --audit-log-maxbackup=3
+      --log-dir={{.Dir}}/log \
+      --log-file-max-size=100 \
+      --audit-log-format=json \
+      --audit-log-path={{.Dir}}/log/ \
+      --audit-log-maxage=30 \
+      --audit-log-maxbackup=3 \
       --audit-log-maxsize=100
 
 Restart=on-failure

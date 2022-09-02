@@ -1,0 +1,29 @@
+---
+- hosts: {{.Host}}
+  remote_user: root
+  gather_facts: no                                        # 默认执行setup模块，禁用此setup选项
+  tasks:                                                    # 一个task 只能有一个模块元素
+    - name:   sync kubernets
+      copy:
+        src: {{.DownloadDir}}/kubernetes
+        dest: /etc
+    - name: mkdir binary dir
+      file:
+        path: {{.Dir}}/log
+        state: directory
+        mode: '0755'
+    - name: copy bianry file
+      copy:
+        src: {{.DownloadDir}}/kube-scheduler
+        dest: {{.Dir}}
+    - name: copy service
+      copy:
+        src: /tmp/kube-scheduler.service
+        dest: /usr/lib/systemd/system
+    - name: systemctl daemon-reload
+      shell: systemctl daemon-reload
+    - name: start kube-scheduler
+      service:
+        name:  kube-scheduler
+        state: started
+        enabled: yes

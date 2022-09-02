@@ -99,4 +99,39 @@ func main() {
 		EtcdHost:    etcdHostArray,
 	}
 	apiserver.InstallApiServer("api-server", inventory)
+
+	// install controllerManager
+	// TODO
+	var contrDir string
+	var podCIDR string
+	for _, v := range config.K8s.Master.Components {
+		if v.Name == "controller-manager" {
+			contrDir = v.Dir
+		}
+	}
+	for _, v := range config.K8s.Plugin {
+		if v.Name == "podCIDR" {
+			podCIDR = v.PodCIDR
+		}
+	}
+	contr := pkg.ControllerManager{
+		Dir:         contrDir,
+		PodCIDR:     podCIDR,
+		DownloadDir: config.Packages.DownloadDir,
+	}
+	contr.InstallControllerManager("controller-manager", inventory)
+
+	// install scheduler
+	// TODO
+	var schedulerDir string
+	for _, v := range config.K8s.Master.Components {
+		if v.Name == "scheduler" {
+			schedulerDir = v.Dir
+		}
+	}
+	scheduler := pkg.Scheduler{
+		Dir:         schedulerDir,
+		DownloadDir: config.Packages.DownloadDir,
+	}
+	scheduler.InstallScheduler("scheduler", inventory)
 }
