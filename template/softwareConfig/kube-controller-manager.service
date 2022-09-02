@@ -24,8 +24,7 @@ ExecStart={{.Dir}}/kube-controller-manager \
       --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.pem \
       --node-cidr-mask-size=24 \
       --log-dir={{.Dir}}/log \
-      --log-file-max-size=100 \
-      --v=2
+      --log-file-max-size=100
 
 Restart=always
 RestartSec=10s
