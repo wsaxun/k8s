@@ -8,23 +8,28 @@ import (
 )
 
 type Etcd struct {
-	DataDir string
-	Host    []string
-	Dir     string
+	DataDir     string
+	Host        []string
+	Dir         string
+	DownloadDir string
 }
 
 func (e *Etcd) InstallEtcd(host string, inventory string) {
 	e.config()
-	ymlName := "keepalived.yml"
+	ymlName := "etcd.yml"
 	box := packr.NewBox("../template")
 	yml, _ := box.FindString(ymlName)
 	type info struct {
-		Host    string
-		AllHost []string
+		Host        string
+		AllHost     []string
+		DownloadDir string
+		Dir         string
 	}
 	content := info{
-		Host:    host,
-		AllHost: e.Host,
+		Host:        host,
+		AllHost:     e.Host,
+		Dir:         e.Dir,
+		DownloadDir: e.DownloadDir,
 	}
 	utils.Render(content, yml, ymlName)
 	//path := utils.Render(content, yml, ymlName)

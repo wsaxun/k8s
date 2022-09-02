@@ -28,6 +28,18 @@ func main() {
 	// generate kubeconfig
 	pkg.KubeConfig(cache, config.Keepalived.Vip, config.Haproxy.FrontendPort, inventory)
 
+	// init env
+	//pkg.InitMasterEnv("master", inventory)
+	//pkg.InitNodeEnv("node", inventory)
+
+	//docker := pkg.Docker{
+	//	YumRepo:         "http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo",
+	//	DataRoot:        "/var/lib/docker",
+	//	RegistryMirrors: "https://mvaav0ar.mirror.aliyuncs.com",
+	//}
+	//docker.InstallDocker("master", inventory)
+	//docker.InstallDocker("node", inventory)
+
 	// install haproxy
 	// TODO
 	haproxyHost := make(map[string]string)
@@ -49,16 +61,24 @@ func main() {
 	}
 	keepalived.InstallKeepalived("keepalived", inventory)
 
-	// init env
-	//pkg.InitMasterEnv("master", inventory)
-	//pkg.InitNodeEnv("node", inventory)
-
-	//docker := pkg.Docker{
-	//	YumRepo:         "http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo",
-	//	DataRoot:        "/var/lib/docker",
-	//	RegistryMirrors: "https://mvaav0ar.mirror.aliyuncs.com",
-	//}
-	//docker.InstallDocker("master", inventory)
-	//docker.InstallDocker("node", inventory)
+	// install etcd
+	// TODO
+	var dataDir string
+	var dir string
+	var etcdHostArray []string
+	for _, v := range config.K8s.Master.Components {
+		if v.Name == "etcd" {
+			dataDir = v.DataDir
+			dir = v.Dir
+			etcdHostArray = v.Hosts
+		}
+	}
+	etcd := pkg.Etcd{
+		DataDir:     dataDir,
+		Host:        etcdHostArray,
+		Dir:         dir,
+		DownloadDir: config.Packages.DownloadDir,
+	}
+	etcd.InstallEtcd("etcd", inventory)
 
 }

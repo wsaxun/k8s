@@ -5,7 +5,7 @@
   tasks:                                                    # 一个task 只能有一个模块元素
     - name:   sync kubernets
       copy:
-        src: {{.downloadDir}}/kubernetes
+        src: {{.DownloadDir}}/kubernetes
         dest: /etc
     - name: mkdir binary dir
       file:
@@ -14,7 +14,7 @@
         mode: '0755'
     - name: copy bianry file
       copy:
-        src: {{.downloadDir}}/etcd-*.tar.gz
+        src: {{.DownloadDir}}/etcd-*.tar.gz
         dest: /tmp
     - name: unarchive
       unarchive:

@@ -71,7 +71,7 @@ func ApiServerCertHost(config utils.Config) string {
 
 func EtcdHost(config utils.Config) string {
 	locahost := "127.0.0.1"
-	var hosts string = locahost
+	var hosts = locahost
 	for _, v := range config.K8s.Master.Components {
 		if v.Name != "etcd" {
 			continue
