@@ -21,7 +21,7 @@
         src: /tmp/etcd-*.tar.gz
         dest: /tmp
     - name: mv file
-        shell: mv /tmp/etcd /tmp/etcdctl {{.Dir}}
+        shell: /usr/bin/mv -f /tmp/etcd-*/etcd /tmp/etcd-*/etcdctl {{.Dir}}
     - name: copy service
       copy:
         src: /tmp/etcd.service
@@ -33,7 +33,7 @@
     - name: config
       copy:
         src: /tmp/etcd.config.yml_{{$v}}
-        dest: {{.Dir}}/etcd.config.yml
+        dest: {{$.Dir}}/etcd.config.yml
     - name: start etcd
       service:
         name: etcd
