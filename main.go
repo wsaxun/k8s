@@ -81,4 +81,22 @@ func main() {
 	}
 	etcd.InstallEtcd("etcd", inventory)
 
+	// install apiServer
+	// TODO
+	var apiServerDir string
+	var apiServerHostArray []string
+	for _, v := range config.K8s.Master.Components {
+		if v.Name == "api-server" {
+			apiServerDir = v.Dir
+			apiServerHostArray = v.Hosts
+		}
+	}
+	apiserver := pkg.ApiServer{
+		Host:        apiServerHostArray,
+		Dir:         apiServerDir,
+		DownloadDir: cache,
+		ServiceCIDR: config.K8s.CIDR.ServiceCIDR,
+		EtcdHost:    etcdHostArray,
+	}
+	apiserver.InstallApiServer("api-server", inventory)
 }

@@ -56,9 +56,9 @@ func (e *Etcd) config() {
 	cluster := ""
 	for index, host := range e.Host {
 		if cluster == "" {
-			cluster = cluster + fmt.Sprintf("etcd%d=%s", index, host)
+			cluster = cluster + fmt.Sprintf("etcd%d=https://%s:2380", index, host)
 		} else {
-			cluster = cluster + fmt.Sprintf(",etcd%d=%s", index, host)
+			cluster = cluster + fmt.Sprintf(",etcd%d=https://%s:2380", index, host)
 		}
 	}
 	tplData.Cluster = cluster
