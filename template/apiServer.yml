@@ -9,7 +9,7 @@
         dest: /etc
     - name: mkdir binary dir
       file:
-        path: {{.Dir}}
+        path: {{.Dir}}/log
         state: directory
         mode: '0755'
     - name: copy bianry file
