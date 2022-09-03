@@ -6,6 +6,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"log"
 	"os"
+	"os/exec"
 	"text/template"
 )
 
@@ -30,4 +31,13 @@ func Token() (tokenId, token string) {
 	md := md5.Sum(uid)
 	x := md[:]
 	return fmt.Sprintf("%x", x)[0:6], fmt.Sprintf("%x", x)[0:16]
+}
+
+func Cmd(name string, args ...string) string {
+	command := exec.Command(name, args...)
+	out, err := command.CombinedOutput()
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return string(out)
 }

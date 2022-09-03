@@ -164,4 +164,21 @@ func main() {
 		DownloadDir: cache,
 	}
 	kubelet.InstallKubelet("kubernetes", inventory)
+
+	// install kube-proxy
+	// TODO
+	var kubeProxyDir string
+	for _, v := range config.K8s.Node.Components {
+		if v.Name == "kubproxy" {
+			kubeProxyDir = v.Dir
+		}
+	}
+	kubeProxy := pkg.Proxy{
+		Vip:         config.Keepalived.Vip,
+		Port:        config.Haproxy.FrontendPort,
+		Dir:         kubeProxyDir,
+		DownloadDir: cache,
+		PodCIDR:     podCIDR,
+	}
+	kubeProxy.InstallProxy("kubernetes", inventory)
 }

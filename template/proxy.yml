@@ -5,12 +5,12 @@
     tasks:                                                    # 一个task 只能有一个模块元素
       - name: copy binary file
         copy:
-          src: {{.DownloadDir}}/kubelet
+          src: {{.DownloadDir}}/kube-proxy
           dest: {{.Dir}}
           mode: "0755"
       - name: copy service
         copy:
-          src: /tmp/kubelet.service
+          src: /tmp/kube-proxy.service
           dest: /usr/lib/systemd/system
       - name: mkdir kubernetes
         file:
@@ -27,14 +27,14 @@
           path: {{.Dir}/log
           state: directory
           mode: "0755"
-      - name: copy bootstrap config
+      - name: copy kube-proxy config
         copy:
-          src: {{.DownloadDir}}/kubernetes/bootstrap-kubelet.kubeconfig
-          dest: /etc/kubernetes
-      - name: copy kubelet config
-        copy:
-          src: /tmp/kubelet-conf.yml
+          src: /tmp/kube-proxy.config.yml
           dest: {{.Dir}}
+      - name: copy kube-proxy kubeconfig
+        copy:
+          src: {{.DownloadDir}/kubernetes/kube-proxy.kubeconfig
+          dest: {{.Dir}}/kubernetes
       - name: copy ca pem
         copy:
           src:  {{.DownloadDir}}/kubernetes/pki/ca.pem
@@ -49,8 +49,8 @@
           dest: /etc/kubernetes/pki
       - name: systemctl daeme-reload
         shell: systemctl daemon-reload
-      - name: start kubelet
+      - name: start kube-proxy
         service:
-          name: kubelet
+          name: kube-proxy
           state: started
           enabled: yes

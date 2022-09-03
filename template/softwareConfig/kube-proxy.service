@@ -1,0 +1,18 @@
+[Unit]
+Description=Kubernetes Kube Proxy
+Documentation=https://github.com/kubernetes/kubernetes
+After=network.target
+
+[Service]
+ExecStart={{.Dir}}/kube-proxy \
+  --config={{.Dir}}/kube-proxy.config.yml \
+  --v=2 \
+  --logtostderr=false \
+  --log-dir={{.Dir}}/log \
+  --log-file-max-size=100
+
+Restart=always
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
