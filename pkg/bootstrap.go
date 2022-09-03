@@ -12,7 +12,8 @@ type Bootstrap struct {
 }
 
 func (b *Bootstrap) InstallBootstrap(host string, inventory string) {
-	b.config()
+	tokenId, token := utils.Token()
+	b.config(tokenId, token)
 	ymlName := "bootstrap.yml"
 	box := packr.NewBox("../template")
 	yml, _ := box.FindString(ymlName)
@@ -24,7 +25,6 @@ func (b *Bootstrap) InstallBootstrap(host string, inventory string) {
 		TokenId     string
 		Token       string
 	}
-	tokenId, token := utils.Token()
 	bootstrapInfo := info{
 		DownloadDir: b.DownloadDir,
 		Vip:         b.Vip,
@@ -37,8 +37,16 @@ func (b *Bootstrap) InstallBootstrap(host string, inventory string) {
 	//utils.Playbook(path, inventory)
 }
 
-func (b *Bootstrap) config() {
+func (b *Bootstrap) config(tokenId, token string) {
 	box := packr.NewBox("../template")
 	context, _ := box.FindString("softwareConfig/bootstrap.secret.yml")
-	utils.Render(b, context, "bootstrap.secret.yml")
+	type info struct {
+		TokenId string
+		Token   string
+	}
+	bootstrapInfo := info{
+		TokenId: tokenId,
+		Token:   token,
+	}
+	utils.Render(bootstrapInfo, context, "bootstrap.secret.yml")
 }
