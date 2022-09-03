@@ -24,7 +24,7 @@
           mode: "0755"
       - name: mkdir log
         file:
-          path: {{.Dir}/log
+          path: {{.Dir}}/log
           state: directory
           mode: "0755"
       - name: copy kube-proxy config
@@ -33,7 +33,7 @@
           dest: {{.Dir}}
       - name: copy kube-proxy kubeconfig
         copy:
-          src: {{.DownloadDir}/kubernetes/kube-proxy.kubeconfig
+          src: {{.DownloadDir}}/kubernetes/kube-proxy.kubeconfig
           dest: {{.Dir}}/kubernetes
       - name: copy ca pem
         copy:

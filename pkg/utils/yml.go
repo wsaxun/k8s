@@ -31,9 +31,10 @@ type Node struct {
 
 // Plugin
 type Plugin struct {
-	Name    string `yaml:"name"`
-	Dns     string `yaml:"dns"`
-	PodCIDR string `yaml:"podCIDR"`
+	Name      string `yaml:"name"`
+	Dns       string `yaml:"dns"`
+	PodCIDR   string `yaml:"podCIDR"`
+	CalicoUrl string `yaml:"calicoUrl"`
 }
 
 // CIDR

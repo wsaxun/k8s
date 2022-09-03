@@ -24,7 +24,7 @@
           mode: "0755"
       - name: mkdir log
         file:
-          path: {{.Dir}/log
+          path: {{.Dir}}/log
           state: directory
           mode: "0755"
       - name: copy bootstrap config

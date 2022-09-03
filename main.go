@@ -181,4 +181,27 @@ func main() {
 		PodCIDR:     podCIDR,
 	}
 	kubeProxy.InstallProxy("kubernetes", inventory)
+
+	// install calico
+	// TODO
+	var calicoUrl string
+	for _, v := range config.K8s.Plugin {
+		if v.Name == "calico" {
+			calicoUrl = v.CalicoUrl
+		}
+	}
+	calico := pkg.Calico{
+		DownloadDir: cache,
+		Url:         calicoUrl,
+		PodCIDR:     podCIDR,
+	}
+	calico.InstallCalico()
+
+	// install coredns
+	// TODO
+	coredns := pkg.CoreDns{
+		Dns:         dns,
+		DownloadDir: cache,
+	}
+	coredns.InstallCoreDns()
 }
