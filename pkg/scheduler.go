@@ -12,7 +12,7 @@ type Scheduler struct {
 
 func (s *Scheduler) InstallScheduler(host string, inventory string) {
 	s.config()
-	ymlName := "scheduler.yml"
+	ymlName := "bootstrap.yml"
 	box := packr.NewBox("../template")
 	yml, _ := box.FindString(ymlName)
 

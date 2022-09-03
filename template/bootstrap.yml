@@ -1,0 +1,39 @@
+---
+# generate kubelet kubeconfig and bootstrap RBAC
+
+- hosts: 127.0.0.1
+  remote_user: root
+  gather_facts: no
+  tasks:
+    - name: mkdir kubernetes
+      file:
+        path: {{.DownloadDir}}/kubernetes
+        state: directory
+    - name: create kubelet kubeconfig
+      shell:
+        cmd: |
+          {{.DownloadDir}}/kubectl config set-cluster kubernetes \
+           --certificate-authority={{.DownloadDir}}/kubernetes/pki/ca.pem \
+           --embed-certs=true \
+           --server=https://{{.Vip}}:{{.Port}} \
+           --kubeconfig={{.DownloadDir}}/kubernetes/bootstrap-kubelet.kubeconfig
+          {{.DownloadDir}}/kubectl config set-credentials tls-bootstrap-token-user \
+           --token={{.TokenId}}.{{.Token}} \
+           --kubeconfig={{.DownloadDir}}/kubernetes/bootstrap-kubelet.kubeconfig
+          {{.DownloadDir}}/kubectl config set-context tls-bootstrap-token-user@kubernetes \
+           --cluster=kubernetes \
+           --user=tls-bootstrap-token-user \
+           --kubeconfig={{.DownloadDir}}/kubernetes/bootstrap-kubelet.kubeconfig
+          {{.DownloadDir}}/kubectl config use-context tls-bootstrap-token-user@kubernetes \
+           --kubeconfig={{.DownloadDir}}/kubernetes/bootstrap-kubelet.kubeconfig
+    - name config admin kubeconfig
+      file:
+        path: /root/.kube
+        state: directory
+    - name soft link kubeconfig
+      file:
+        src: /etc/kubernetes/admin.kubeconfig
+        dest: /root/.kube/config
+        state: link
+    - name create RBAC
+      shell: {{.DownloadDir}}/kubectl apply -f bootstrap.secret.yml

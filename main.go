@@ -110,7 +110,7 @@ func main() {
 		}
 	}
 	for _, v := range config.K8s.Plugin {
-		if v.Name == "podCIDR" {
+		if v.Name == "calico" {
 			podCIDR = v.PodCIDR
 		}
 	}
@@ -134,4 +134,34 @@ func main() {
 		DownloadDir: config.Packages.DownloadDir,
 	}
 	scheduler.InstallScheduler("scheduler", inventory)
+
+	// install bootstrap
+	// TODO
+	bootstrap := pkg.Bootstrap{
+		DownloadDir: config.Packages.DownloadDir,
+		Vip:         config.Keepalived.Vip,
+		Port:        config.Haproxy.FrontendPort,
+	}
+	bootstrap.InstallBootstrap("127.0.0.1", inventory)
+
+	// install kubelet
+	// TODO
+	var dns string
+	var kubeletDir string
+	for _, v := range config.K8s.Plugin {
+		if v.Name == "coreDns" {
+			dns = v.Dns
+		}
+	}
+	for _, v := range config.K8s.Node.Components {
+		if v.Name == "kubelet" {
+			kubeletDir = v.Dir
+		}
+	}
+	kubelet := pkg.Kubelet{
+		CoreDns:     dns,
+		Dir:         kubeletDir,
+		DownloadDir: cache,
+	}
+	kubelet.InstallKubelet("kubernetes", inventory)
 }

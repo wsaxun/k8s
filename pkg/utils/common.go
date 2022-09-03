@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"crypto/md5"
+	uuid "github.com/satori/go.uuid"
 	"log"
 	"os"
 	"text/template"
@@ -20,4 +22,11 @@ func Render(data interface{}, templateStr, fileName string) (path string) {
 		log.Fatalln(err)
 	}
 	return "/tmp/" + fileName
+}
+
+func Token() (tokenId, token string) {
+	uid := uuid.NewV4().Bytes()
+	md := md5.Sum(uid)
+	x := md[:]
+	return string(x[0:6]), string(x[0:16])
 }
