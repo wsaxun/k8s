@@ -2,6 +2,7 @@ package utils
 
 import (
 	"crypto/md5"
+	"fmt"
 	uuid "github.com/satori/go.uuid"
 	"log"
 	"os"
@@ -28,5 +29,5 @@ func Token() (tokenId, token string) {
 	uid := uuid.NewV4().Bytes()
 	md := md5.Sum(uid)
 	x := md[:]
-	return string(x[0:6]), string(x[0:16])
+	return fmt.Sprintf("%x", x)[0:6], fmt.Sprintf("%x", x)[0:16]
 }
