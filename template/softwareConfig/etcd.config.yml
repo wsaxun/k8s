@@ -1,6 +1,6 @@
 # 该值被该节点吃的--initial-cluster参数引用
 name: {{.Name}}
-data-dir:
+data-dir: {{.DataDir}}
 # 专用的wal目录的路径
 wal-dir: {{.DataDir}}/wal
 # 触发一个快照到磁盘的已提交交易的数量
@@ -35,7 +35,7 @@ discovery-proxy:
 discovery-srv:
 # 启动集群的初始化配置
 #initial-cluster: 'k8s-master01=https://192.168.58.129:2380,k8s-master02=https://192.168.58.130:2380,k8s-master03=https://192.168.58.131:2380'
-initial-cluster: {{.Cluster}}
+initial-cluster: '{{.Cluster}}'
 # 引导期间etcd群集的初始集群令牌
 initial-cluster-token: 'etcd-k8s-cluster'
 # 初始群集状态（“新”或“现有”）

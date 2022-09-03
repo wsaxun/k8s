@@ -12,6 +12,7 @@ type Etcd struct {
 	Host        []string
 	Dir         string
 	DownloadDir string
+	EtcdName    string
 }
 
 func (e *Etcd) InstallEtcd(host string, inventory string) {
@@ -24,12 +25,14 @@ func (e *Etcd) InstallEtcd(host string, inventory string) {
 		AllHost     []string
 		DownloadDir string
 		Dir         string
+		EtcdName    string
 	}
 	content := info{
 		Host:        host,
 		AllHost:     e.Host,
 		Dir:         e.Dir,
 		DownloadDir: e.DownloadDir,
+		EtcdName:    e.EtcdName,
 	}
 	utils.Render(content, yml, ymlName)
 	//path := utils.Render(content, yml, ymlName)

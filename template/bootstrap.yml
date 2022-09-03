@@ -26,14 +26,14 @@
            --kubeconfig={{.DownloadDir}}/kubernetes/bootstrap-kubelet.kubeconfig
           {{.DownloadDir}}/kubectl config use-context tls-bootstrap-token-user@kubernetes \
            --kubeconfig={{.DownloadDir}}/kubernetes/bootstrap-kubelet.kubeconfig
-    - name config admin kubeconfig
+    - name: config admin kubeconfig
       file:
         path: /root/.kube
         state: directory
-    - name soft link kubeconfig
+    - name: soft link kubeconfig
       file:
         src: /etc/kubernetes/admin.kubeconfig
         dest: /root/.kube/config
         state: link
-    - name create RBAC
-      shell: {{.DownloadDir}}/kubectl apply -f bootstrap.secret.yml
+    - name: create RBAC
+      shell: {{.DownloadDir}}/kubectl apply -f /tmp/bootstrap.secret.yml

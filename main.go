@@ -4,6 +4,7 @@ import (
 	"k8s/pkg"
 	"k8s/pkg/utils"
 	"strconv"
+	"strings"
 )
 
 func main() {
@@ -11,6 +12,15 @@ func main() {
 	config := utils.ParserYml("./configs/install.yml")
 	cache := config.Packages.DownloadDir
 	urls := config.Packages.Url
+
+	var etcdName string
+	for _, v := range urls {
+		if strings.Index(v, "etcd") >= 1 {
+			tmp := strings.Split(v, "/")
+			length := len(tmp)
+			etcdName = tmp[length]
+		}
+	}
 
 	// generate ansible inventory
 	inventory := pkg.Inventory(config)
@@ -78,6 +88,7 @@ func main() {
 		Host:        etcdHostArray,
 		Dir:         dir,
 		DownloadDir: config.Packages.DownloadDir,
+		EtcdName:    etcdName,
 	}
 	etcd.InstallEtcd("etcd", inventory)
 

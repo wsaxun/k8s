@@ -49,8 +49,8 @@ func (k *Keepalived) config() {
 		HostInfo:  k.Host,
 		Vip:       k.Vip,
 	}
-	for index, host := range k.Host {
-		tplData.Level += index
+	for _, host := range k.Host {
+		tplData.Level += 1
 		tplData.LocalHost = host
 		utils.Render(tplData, context, "keepalived.conf_"+host)
 	}

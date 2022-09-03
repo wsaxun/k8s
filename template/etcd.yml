@@ -14,11 +14,11 @@
         mode: '0755'
     - name: copy bianry file
       copy:
-        src: {{.DownloadDir}}/etcd-*.tar.gz
+        src: {{.DownloadDir}}/{{.EtcdName}}
         dest: /tmp
     - name: unarchive
       unarchive:
-        src: /tmp/etcd-*.tar.gz
+        src: /tmp/{{.EtcdName}}
         dest: /tmp
     - name: mv file
         shell:

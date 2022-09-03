@@ -15,7 +15,7 @@ type Proxy struct {
 
 func (p *Proxy) InstallProxy(host string, inventory string) {
 	p.config(inventory)
-	ymlName := "proxy.yml"
+	ymlName := "kubeProxy.yml"
 	box := packr.NewBox("../template")
 	yml, _ := box.FindString(ymlName)
 	type info struct {
