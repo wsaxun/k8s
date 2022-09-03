@@ -16,8 +16,19 @@ func (k *Kubelet) InstallKubelet(host string, inventory string) {
 	ymlName := "kubelet.yml"
 	box := packr.NewBox("../template")
 	yml, _ := box.FindString(ymlName)
-
-	utils.Render(k, yml, ymlName)
+	type info struct {
+		CoreDns     string
+		Dir         string
+		DownloadDir string
+		Host        string
+	}
+	kubeletInfo := info{
+		CoreDns:     k.CoreDns,
+		Dir:         k.Dir,
+		DownloadDir: k.DownloadDir,
+		Host:        host,
+	}
+	utils.Render(kubeletInfo, yml, ymlName)
 	//path := utils.Render(content, yml, ymlName)
 	//utils.Playbook(path, inventory)
 }
