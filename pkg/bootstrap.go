@@ -33,9 +33,8 @@ func (b *Bootstrap) Install(host string, inventory string) {
 		TokenId:     tokenId,
 		Token:       token,
 	}
-	utils.Render(bootstrapInfo, yml, ymlName)
-	//path := utils.Render(content, yml, ymlName)
-	//utils.Playbook(path, inventory)
+	path := utils.Render(bootstrapInfo, yml, ymlName)
+	utils.Playbook(path, inventory)
 }
 
 func (b *Bootstrap) config(tokenId, token string) {

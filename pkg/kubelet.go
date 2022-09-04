@@ -29,9 +29,8 @@ func (k *Kubelet) Install(host string, inventory string) {
 		DownloadDir: k.DownloadDir,
 		Host:        host,
 	}
-	utils.Render(kubeletInfo, yml, ymlName)
-	//path := utils.Render(content, yml, ymlName)
-	//utils.Playbook(path, inventory)
+	path := utils.Render(kubeletInfo, yml, ymlName)
+	utils.Playbook(path, inventory)
 }
 
 func (k *Kubelet) config() {

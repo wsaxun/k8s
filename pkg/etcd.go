@@ -35,9 +35,8 @@ func (e *Etcd) Install(host string, inventory string) {
 		DownloadDir: e.DownloadDir,
 		EtcdName:    e.EtcdName,
 	}
-	utils.Render(content, yml, ymlName)
-	//path := utils.Render(content, yml, ymlName)
-	//utils.Playbook(path, inventory)
+	path := utils.Render(content, yml, ymlName)
+	utils.Playbook(path, inventory)
 }
 
 func (e *Etcd) config() {

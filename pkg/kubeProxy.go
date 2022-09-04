@@ -29,9 +29,8 @@ func (p *Proxy) Install(host string, inventory string) {
 		DownloadDir: p.DownloadDir,
 		Host:        host,
 	}
-	utils.Render(kubeProxyInfo, yml, ymlName)
-	//path := utils.Render(content, yml, ymlName)
-	//utils.Playbook(path, inventory)
+	path := utils.Render(kubeProxyInfo, yml, ymlName)
+	utils.Playbook(path, inventory)
 }
 
 func (p *Proxy) config(inventory string) {
@@ -66,7 +65,6 @@ func (p *Proxy) kubeConfig(inventory string) {
 	}
 	box := packr.NewBox("../template")
 	context, _ := box.FindString("kubeProxyKubeConfig.yml")
-	utils.Render(proxyInfo, context, "kubeProxyKubeConfig.yml")
-	//path := utils.Render(proxyInfo, context, "kubeProxyKubeConfig.yml")
-	//utils.Playbook(path, inventory)
+	path := utils.Render(proxyInfo, context, "kubeProxyKubeConfig.yml")
+	utils.Playbook(path, inventory)
 }

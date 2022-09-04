@@ -22,7 +22,6 @@ func (h *Haproxy) Install(host string, inventory string) {
 		Host string
 	}
 	content := info{Host: host}
-	utils.Render(content, yml, ymlName)
-	//path := utils.Render(content, yml, ymlName)
-	//utils.Playbook(path, inventory)
+	path := utils.Render(content, yml, ymlName)
+	utils.Playbook(path, inventory)
 }

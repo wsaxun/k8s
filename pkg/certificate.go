@@ -57,7 +57,8 @@ func Cert(downloadCache string, etcdhost, allHost string, inventory string) {
 }
 
 func ApiServerCertHost(config utils.Config) string {
-	var hosts string = "127.0.0.1,kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster,kubernetes.default.svc.cluster.local"
+	var hosts string
+	hosts = "127.0.0.1,kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster,kubernetes.default.svc.cluster.local"
 	vip := config.Keepalived.Vip
 	hosts = hosts + "," + vip
 	for _, v := range config.K8s.Master.Components {

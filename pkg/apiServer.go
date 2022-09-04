@@ -32,9 +32,8 @@ func (a *ApiServer) Install(host string, inventory string) {
 		DownloadDir: a.DownloadDir,
 		AllHost:     a.Host,
 	}
-	utils.Render(serviceInfo, yml, ymlName)
-	//path := utils.Render(content, yml, ymlName)
-	//utils.Playbook(path, inventory)
+	path := utils.Render(serviceInfo, yml, ymlName)
+	utils.Playbook(path, inventory)
 }
 
 func (a *ApiServer) config() {

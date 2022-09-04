@@ -24,7 +24,6 @@ func (d *Docker) Install(host string, inventory string) {
 		YumRepo string
 	}
 	content := info{Host: host, YumRepo: d.YumRepo}
-	utils.Render(content, dockerYml, ymlName)
-	//path := utils.Render(content, dockerYml, ymlName)
-	//utils.Playbook(path, inventory)
+	path := utils.Render(content, dockerYml, ymlName)
+	utils.Playbook(path, inventory)
 }

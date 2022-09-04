@@ -27,9 +27,8 @@ func (s *Scheduler) Install(host string, inventory string) {
 		Host:        host,
 		DownloadDir: s.DownloadDir,
 	}
-	utils.Render(serviceInfo, yml, ymlName)
-	//path := utils.Render(content, yml, ymlName)
-	//utils.Playbook(path, inventory)
+	path := utils.Render(serviceInfo, yml, ymlName)
+	utils.Playbook(path, inventory)
 }
 
 func (s *Scheduler) config() {

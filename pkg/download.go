@@ -21,7 +21,6 @@ func (s *Software) DownloadPackages(inventory string) {
 	fileName := "download.yml"
 	box := packr.NewBox("../template")
 	downloadYml, _ := box.FindString(fileName)
-	utils.Render(urlInfo, downloadYml, fileName)
-	//path := utils.Render(urlInfo, downloadYml, fileName)
-	//utils.Playbook(path, inventory)
+	path := utils.Render(urlInfo, downloadYml, fileName)
+	utils.Playbook(path, inventory)
 }

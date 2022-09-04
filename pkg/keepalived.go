@@ -25,9 +25,8 @@ func (k *Keepalived) Install(host string, inventory string) {
 		Host:    host,
 		AllHost: k.Host,
 	}
-	utils.Render(content, yml, ymlName)
-	//path := utils.Render(content, yml, ymlName)
-	//utils.Playbook(path, inventory)
+	path := utils.Render(content, yml, ymlName)
+	utils.Playbook(path, inventory)
 }
 
 func (k *Keepalived) config() {

@@ -28,9 +28,8 @@ func (c *ControllerManager) Install(host string, inventory string) {
 		Host:        host,
 		DownloadDir: c.DownloadDir,
 	}
-	utils.Render(serviceInfo, yml, ymlName)
-	//path := utils.Render(content, yml, ymlName)
-	//utils.Playbook(path, inventory)
+	path := utils.Render(serviceInfo, yml, ymlName)
+	utils.Playbook(path, inventory)
 }
 
 func (c *ControllerManager) config() {
