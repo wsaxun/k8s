@@ -64,7 +64,7 @@ keepalived:
     - 192.168.58.130
     - 192.168.58.131
   vip: 192.168.58.110
-  interface: eth0
+  interface: ens33
 
 packages:
   downloadDir: /tmp/packages
