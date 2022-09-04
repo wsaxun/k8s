@@ -3,8 +3,11 @@
   remote_user: root
   gather_facts: no                                        # 默认执行setup模块，禁用此setup选项
   tasks:                                                    # 一个task 只能有一个模块元素
-    - name: hostname
-      shell: hostname
+    - name: mkdir
+      file:
+        path: {{.DownloadPackage}}
+        state: directory
+        mode: 0755
 {{- range $i, $v := .URL}}
   {{- if IsDownload $v $.DownloadPackage }}
     - name: download {{$v}}

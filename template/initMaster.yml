@@ -28,8 +28,10 @@
         enabled: no
     - name: disenabled selinux
       shell: setenforce 0 && sed -i 's@SELINUX=enforcing@SELINUX=disabled@g'  /etc/selinux/config
+      ignore_errors: yes
     - name: disenabled swapp
       shell: swapoff -a && sysctl -w vm.swappiness=0 && sed -ri '/^[^#]*swap/s@^@#@' /etc/fstab
+      ignore_errors: yes
     - name: ulimit
       shell:
         cmd: |
@@ -53,4 +55,4 @@
           vm.swappiness=0
           EOF
     - name: load
-      shell: sys -p /etc/sysctl.d/k8s.conf  && u
+      shell: sysctl -p /etc/sysctl.d/k8s.conf
