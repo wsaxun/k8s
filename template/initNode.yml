@@ -34,7 +34,7 @@
     - name: ulimit
       shell:
         cmd: |
-          cat >> /etc/security/limits.d/30-limit.conf << EOF
+          cat > /etc/security/limits.d/30-limit.conf << EOF
           * soft nofile 65535
           * hard nofile 655350
           * soft nproc 65535
@@ -47,11 +47,25 @@
     - name: sysctl
       shell:
         cmd: |
-          cat >> /etc/sysctl.d/k8s.conf << EOF
+          cat > /etc/sysctl.d/k8s.conf << EOF
           net.bridge.bridge-nf-call-ip6tables = 1
           net.bridge.bridge-nf-call-iptables = 1
           net.ipv4.ip_forward = 1
           vm.swappiness=0
           EOF
+    - name: enable br_netfilter
+      shell:
+        cmd: |
+          cat > /etc/sysconfig/modules/ipvs.modules << EOF
+          #!/bin/bash
+          modprobe -- ip_vs
+          modprobe -- ip_vs_rr
+          modprobe -- ip_vs_wrr
+          modprobe -- ip_vs_sh
+          modprobe -- nf_conntrack_ipv4
+          modprobe -- nf_conntrack
+          EOF
+          chmod +x /etc/sysconfig/modules/ipvs.modules && modprobe br_netfilter
+        ignore_errors: yes
     - name: load
       shell: sysctl -p /etc/sysctl.d/k8s.conf
