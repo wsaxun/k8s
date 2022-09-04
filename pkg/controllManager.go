@@ -6,12 +6,13 @@ import (
 )
 
 type ControllerManager struct {
+	utils.K8SSoftware
 	Dir         string
 	PodCIDR     string
 	DownloadDir string
 }
 
-func (c *ControllerManager) InstallControllerManager(host string, inventory string) {
+func (c *ControllerManager) Install(host string, inventory string) {
 	c.config()
 	ymlName := "controllerManager.yml"
 	box := packr.NewBox("../template")

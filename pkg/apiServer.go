@@ -6,6 +6,7 @@ import (
 )
 
 type ApiServer struct {
+	utils.K8SSoftware
 	Host        []string
 	Dir         string
 	DownloadDir string
@@ -13,7 +14,7 @@ type ApiServer struct {
 	EtcdHost    []string
 }
 
-func (a *ApiServer) InstallApiServer(host string, inventory string) {
+func (a *ApiServer) Install(host string, inventory string) {
 	a.config()
 	ymlName := "apiServer.yml"
 	box := packr.NewBox("../template")

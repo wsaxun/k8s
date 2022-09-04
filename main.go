@@ -49,16 +49,21 @@ func main() {
 	pkg.KubeConfig(softwareDownloadDir, config.Keepalived.Vip, config.Haproxy.FrontendPort, inventory)
 
 	// init env
-	//pkg.InitMasterEnv("master", inventory)
-	//pkg.InitNodeEnv("node", inventory)
+	// TODO
+	pkg.InitMasterEnv("master", inventory)
+	pkg.InitNodeEnv("node", inventory)
 
-	//docker := pkg.Docker{
-	//	YumRepo:         "http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo",
-	//	DataRoot:        "/var/lib/docker",
-	//	RegistryMirrors: "https://mvaav0ar.mirror.aliyuncs.com",
-	//}
-	//docker.InstallDocker("master", inventory)
-	//docker.InstallDocker("node", inventory)
+	// install docker
+	yumRepo := config.Docker.YumRepo
+	dataRoot := config.Docker.DataRoot
+	mirror := config.Docker.RegistryMirrors
+	docker := pkg.Docker{
+		YumRepo:         yumRepo,
+		DataRoot:        dataRoot,
+		RegistryMirrors: mirror,
+	}
+	docker.Install("master", inventory)
+	docker.Install("node", inventory)
 
 	// install haproxy
 	// TODO
@@ -70,7 +75,7 @@ func main() {
 		Port:     config.Haproxy.FrontendPort,
 		HostInfo: haproxyHost,
 	}
-	haproxy.InstallHaproxy("haproxy", inventory)
+	haproxy.Install("haproxy", inventory)
 
 	// install keepalived
 	// TODO
@@ -79,7 +84,7 @@ func main() {
 		Host:      config.Keepalived.Hosts,
 		Vip:       config.Keepalived.Vip,
 	}
-	keepalived.InstallKeepalived("keepalived", inventory)
+	keepalived.Install("keepalived", inventory)
 
 	// install etcd
 	// TODO
@@ -100,7 +105,7 @@ func main() {
 		DownloadDir: config.Packages.DownloadDir,
 		EtcdName:    etcdName,
 	}
-	etcd.InstallEtcd("etcd", inventory)
+	etcd.Install("etcd", inventory)
 
 	// install apiServer
 	// TODO
@@ -119,7 +124,7 @@ func main() {
 		ServiceCIDR: config.K8s.CIDR.ServiceCIDR,
 		EtcdHost:    etcdHostArray,
 	}
-	apiserver.InstallApiServer("api-server", inventory)
+	apiserver.Install("api-server", inventory)
 
 	// install controllerManager
 	// TODO
@@ -140,7 +145,7 @@ func main() {
 		PodCIDR:     podCIDR,
 		DownloadDir: config.Packages.DownloadDir,
 	}
-	contr.InstallControllerManager("controller-manager", inventory)
+	contr.Install("controller-manager", inventory)
 
 	// install scheduler
 	// TODO
@@ -154,7 +159,7 @@ func main() {
 		Dir:         schedulerDir,
 		DownloadDir: config.Packages.DownloadDir,
 	}
-	scheduler.InstallScheduler("scheduler", inventory)
+	scheduler.Install("scheduler", inventory)
 
 	// install bootstrap
 	// TODO
@@ -163,7 +168,7 @@ func main() {
 		Vip:         config.Keepalived.Vip,
 		Port:        config.Haproxy.FrontendPort,
 	}
-	bootstrap.InstallBootstrap("127.0.0.1", inventory)
+	bootstrap.Install("127.0.0.1", inventory)
 
 	// install kubelet
 	// TODO
@@ -184,7 +189,7 @@ func main() {
 		Dir:         kubeletDir,
 		DownloadDir: softwareDownloadDir,
 	}
-	kubelet.InstallKubelet("kubernetes", inventory)
+	kubelet.Install("kubernetes", inventory)
 
 	// install kube-proxy
 	// TODO
@@ -201,7 +206,7 @@ func main() {
 		DownloadDir: softwareDownloadDir,
 		PodCIDR:     podCIDR,
 	}
-	kubeProxy.InstallProxy("kubernetes", inventory)
+	kubeProxy.Install("kubernetes", inventory)
 
 	// install calico
 	// TODO
@@ -216,7 +221,7 @@ func main() {
 		Url:         calicoUrl,
 		PodCIDR:     podCIDR,
 	}
-	calico.InstallCalico()
+	calico.Install()
 
 	// install coredns
 	// TODO
@@ -224,5 +229,5 @@ func main() {
 		Dns:         dns,
 		DownloadDir: softwareDownloadDir,
 	}
-	coredns.InstallCoreDns()
+	coredns.Install()
 }

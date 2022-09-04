@@ -48,7 +48,7 @@ k8s:
 
 docker:
   yumRepo: http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
-  dataRoot: /data/docker
+  dataRoot: /var/lib/docker
   registryMirrors: https://mvaav0ar.mirror.aliyuncs.com
 
 haproxy:

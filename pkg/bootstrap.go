@@ -6,12 +6,13 @@ import (
 )
 
 type Bootstrap struct {
+	utils.K8SSoftware
 	DownloadDir string
 	Vip         string
 	Port        int
 }
 
-func (b *Bootstrap) InstallBootstrap(host string, inventory string) {
+func (b *Bootstrap) Install(host string, inventory string) {
 	tokenId, token := utils.Token()
 	b.config(tokenId, token)
 	ymlName := "bootstrap.yml"

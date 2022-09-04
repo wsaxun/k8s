@@ -6,12 +6,13 @@ import (
 )
 
 type Kubelet struct {
+	utils.K8SSoftware
 	CoreDns     string
 	Dir         string
 	DownloadDir string
 }
 
-func (k *Kubelet) InstallKubelet(host string, inventory string) {
+func (k *Kubelet) Install(host string, inventory string) {
 	k.config()
 	ymlName := "kubelet.yml"
 	box := packr.NewBox("../template")

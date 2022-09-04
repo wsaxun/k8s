@@ -8,6 +8,7 @@ import (
 )
 
 type Etcd struct {
+	utils.K8SSoftware
 	DataDir     string
 	Host        []string
 	Dir         string
@@ -15,7 +16,7 @@ type Etcd struct {
 	EtcdName    string
 }
 
-func (e *Etcd) InstallEtcd(host string, inventory string) {
+func (e *Etcd) Install(host string, inventory string) {
 	e.config()
 	ymlName := "etcd.yml"
 	box := packr.NewBox("../template")

@@ -6,12 +6,13 @@ import (
 )
 
 type Keepalived struct {
+	utils.K8SSoftware
 	Interface string
 	Host      []string
 	Vip       string
 }
 
-func (k *Keepalived) InstallKeepalived(host string, inventory string) {
+func (k *Keepalived) Install(host string, inventory string) {
 	k.config()
 	ymlName := "keepalived.yml"
 	box := packr.NewBox("../template")

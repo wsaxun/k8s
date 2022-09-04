@@ -6,11 +6,12 @@ import (
 )
 
 type Scheduler struct {
+	utils.K8SSoftware
 	Dir         string
 	DownloadDir string
 }
 
-func (s *Scheduler) InstallScheduler(host string, inventory string) {
+func (s *Scheduler) Install(host string, inventory string) {
 	s.config()
 	ymlName := "scheduler.yml"
 	box := packr.NewBox("../template")

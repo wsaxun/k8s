@@ -6,12 +6,13 @@ import (
 )
 
 type Docker struct {
+	utils.K8SSoftware
 	YumRepo         string
 	DataRoot        string
 	RegistryMirrors string
 }
 
-func (d *Docker) InstallDocker(host string, inventory string) {
+func (d *Docker) Install(host string, inventory string) {
 	ymlName := "installDocker.yml"
 	box := packr.NewBox("../template")
 	daemonContext, _ := box.FindString("softwareConfig/daemon.json")
@@ -23,6 +24,7 @@ func (d *Docker) InstallDocker(host string, inventory string) {
 		YumRepo string
 	}
 	content := info{Host: host, YumRepo: d.YumRepo}
-	path := utils.Render(content, dockerYml, ymlName)
-	utils.Playbook(path, inventory)
+	utils.Render(content, dockerYml, ymlName)
+	//path := utils.Render(content, dockerYml, ymlName)
+	//utils.Playbook(path, inventory)
 }

@@ -4,7 +4,7 @@
   "data-root": "{{.DataRoot}}",
   "log-driver": "json-file",
   "log-opts": {
-    "max-size": "2048m",
+    "max-size": "200m",
     "max-file": "5"
   }
 }

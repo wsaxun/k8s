@@ -6,11 +6,12 @@ import (
 )
 
 type CoreDns struct {
+	utils.K8SSoftware
 	Dns         string
 	DownloadDir string
 }
 
-func (c *CoreDns) InstallCoreDns() {
+func (c *CoreDns) Install() {
 	box := packr.NewBox("../template")
 	context, _ := box.FindString("softwareConfig/coredns.yml")
 	path := utils.Render(c, context, "coredns.yml")

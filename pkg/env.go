@@ -14,8 +14,9 @@ func initEnv(host string, yml string, inventory string) {
 
 	box := packr.NewBox("../template")
 	initMasterYml, _ := box.FindString(yml)
-	path := utils.Render(hosts, initMasterYml, yml)
-	utils.Playbook(path, inventory)
+	utils.Render(hosts, initMasterYml, yml)
+	//path := utils.Render(hosts, initMasterYml, yml)
+	//utils.Playbook(path, inventory)
 }
 
 func InitMasterEnv(host string, inventory string) {

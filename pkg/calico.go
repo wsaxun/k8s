@@ -7,12 +7,13 @@ import (
 )
 
 type Calico struct {
+	utils.K8SSoftware
 	DownloadDir string
 	Url         string
 	PodCIDR     string
 }
 
-func (c *Calico) InstallCalico() {
+func (c *Calico) Install() {
 	fileName := utils.FileName(c.Url)
 	_, err := os.Stat(filepath.Join(c.DownloadDir, fileName))
 	var cmd string

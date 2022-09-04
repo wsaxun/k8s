@@ -12,6 +12,16 @@ import (
 	"text/template"
 )
 
+type K8SSoftware struct{}
+
+func (s *K8SSoftware) Install() {
+	log.Fatalln("you must implement this function")
+}
+
+func (s *K8SSoftware) config() {
+	log.Fatalln("you must implement this function")
+}
+
 func GetCache() string {
 	return AnsibleCache
 }

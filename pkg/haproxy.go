@@ -6,11 +6,12 @@ import (
 )
 
 type Haproxy struct {
+	utils.K8SSoftware
 	Port     int
 	HostInfo map[string]string
 }
 
-func (h *Haproxy) InstallHaproxy(host string, inventory string) {
+func (h *Haproxy) Install(host string, inventory string) {
 	ymlName := "haproxy.yml"
 	box := packr.NewBox("../template")
 	context, _ := box.FindString("softwareConfig/haproxy.cfg")

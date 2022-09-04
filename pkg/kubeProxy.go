@@ -6,6 +6,7 @@ import (
 )
 
 type Proxy struct {
+	utils.K8SSoftware
 	Vip         string
 	Port        int
 	Dir         string
@@ -13,7 +14,7 @@ type Proxy struct {
 	PodCIDR     string
 }
 
-func (p *Proxy) InstallProxy(host string, inventory string) {
+func (p *Proxy) Install(host string, inventory string) {
 	p.config(inventory)
 	ymlName := "kubeProxy.yml"
 	box := packr.NewBox("../template")
