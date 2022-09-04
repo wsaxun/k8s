@@ -3,12 +3,10 @@
   remote_user: root
   gather_facts: no                                        # 默认执行setup模块，禁用此setup选项
   tasks:                                                    # 一个task 只能有一个模块元素
-{{range $i, $v := .URL}}
-  {{if IsDownload $v}}
+{{- range $i, $v := .URL}}
     - name: download {{$v}}
       get_url:
         url: {{$v}}
         dest: {{$.DownloadPackage}}
         mode: "0755"
-  {{end}}
-{{end}}
+{{- end}}
