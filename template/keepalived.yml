@@ -3,12 +3,16 @@
   remote_user: root
   gather_facts: no                                        # 默认执行setup模块，禁用此setup选项
   tasks:                                                    # 一个task 只能有一个模块元素
-    - name:
+    - name: install keepalived
       yum:
-        - keepalived
-      state: present
-{{range $i, $v :=  .AllHost}}
+        name:
+          - keepalived
+        state: present
+{{- range $i, $v :=  .AllHost}}
 - hosts: {{$v}}
+  remote_user: root
+  gather_facts: no                                        # 默认执行setup模块，禁用此setup选项
+  tasks:
     - name: config
       copy:
         src: {{GetCache}}/keepalived.conf_{{$v}}
@@ -18,4 +22,4 @@
         name: keepalived
         state: started
         enabled: yes
-{{end}}
+{{- end}}

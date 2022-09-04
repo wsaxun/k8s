@@ -3,15 +3,16 @@
   remote_user: root
   gather_facts: no                                        # 默认执行setup模块，禁用此setup选项
   tasks:                                                    # 一个task 只能有一个模块元素
-    - name:
+    - name: install haproxy
       yum:
-        - haproxy
-      state: present
+        name:
+          - haproxy
+        state: present
     - name: config
       copy:
         src: {{GetCache}}/haproxy.cfg
         dest: /etc/haproxy
-    - name: start docker
+    - name: start haproxy
       service:
         name: haproxy
         state: started

@@ -21,10 +21,10 @@
         src: /tmp/{{.EtcdName}}
         dest: /tmp
     - name: mv file
-        shell:
-          cmd: |
-            /usr/bin/mv -f /tmp/etcd-*/etcd /tmp/etcd-*/etcdctl {{.Dir}}
-            chmod +x {{.Dir}}/etcd*
+      shell:
+        cmd: |
+          /usr/bin/mv -f /tmp/etcd-*/etcd /tmp/etcd-*/etcdctl {{.Dir}}
+          chmod +x {{.Dir}}/etcd*
     - name: copy service
       copy:
         src: {{GetCache}}/etcd.service
@@ -33,6 +33,9 @@
       shell: systemctl daemon-reload
 {{range $i, $v :=  .AllHost}}
 - hosts: {{$v}}
+  remote_user: root
+  gather_facts: no                                        # 默认执行setup模块，禁用此setup选项
+  tasks:                                                    # 一个task 只能有一个模块元素
     - name: config
       copy:
         src: {{GetCache}}/etcd.config.yml_{{$v}}
