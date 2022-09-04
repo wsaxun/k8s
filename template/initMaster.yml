@@ -67,6 +67,6 @@
           modprobe -- nf_conntrack
           EOF
           chmod +x /etc/sysconfig/modules/ipvs.modules && modprobe br_netfilter
-        ignore_errors: yes
+      ignore_errors: yes
     - name: load
       shell: sysctl -p /etc/sysctl.d/k8s.conf
