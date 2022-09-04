@@ -18,7 +18,7 @@ func main() {
 		if strings.Index(v, "etcd") >= 1 {
 			tmp := strings.Split(v, "/")
 			length := len(tmp)
-			etcdName = tmp[length]
+			etcdName = tmp[length-1]
 		}
 	}
 
@@ -27,7 +27,11 @@ func main() {
 
 	// download
 	// TODO
-	pkg.DownloadPackages(cache, urls, inventory)
+	software := pkg.Software{
+		DownloadPackage: cache,
+		URL:             urls,
+	}
+	software.DownloadPackages(inventory)
 
 	// generate cert
 	pkg.ConfigCsr(cache, config.K8s.Certificate)
