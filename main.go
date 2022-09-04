@@ -3,6 +3,9 @@ package main
 import (
 	"k8s/pkg"
 	"k8s/pkg/utils"
+	"log"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -10,8 +13,13 @@ import (
 func main() {
 	// parser install yml
 	config := utils.ParserYml("./configs/install.yml")
-	cache := config.Packages.DownloadDir
+	softwareDownloadDir := config.Packages.DownloadDir
 	urls := config.Packages.Url
+	utils.AnsibleCache = filepath.Join(softwareDownloadDir, "ansibleCache")
+	err := os.MkdirAll(utils.AnsibleCache, 0755)
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	var etcdName string
 	for _, v := range urls {
@@ -28,19 +36,19 @@ func main() {
 	// download
 	// TODO
 	software := pkg.Software{
-		DownloadPackage: cache,
+		DownloadPackage: softwareDownloadDir,
 		URL:             urls,
 	}
 	software.DownloadPackages(inventory)
 
 	// generate cert
-	pkg.ConfigCsr(cache, config.K8s.Certificate)
+	pkg.ConfigCsr(softwareDownloadDir, config.K8s.Certificate)
 	allHost := pkg.ApiServerCertHost(config)
 	etcdHost := pkg.EtcdHost(config)
-	pkg.Cert(cache, etcdHost, allHost, inventory)
+	pkg.Cert(softwareDownloadDir, etcdHost, allHost, inventory)
 
 	// generate kubeconfig
-	pkg.KubeConfig(cache, config.Keepalived.Vip, config.Haproxy.FrontendPort, inventory)
+	pkg.KubeConfig(softwareDownloadDir, config.Keepalived.Vip, config.Haproxy.FrontendPort, inventory)
 
 	// init env
 	//pkg.InitMasterEnv("master", inventory)
@@ -109,7 +117,7 @@ func main() {
 	apiserver := pkg.ApiServer{
 		Host:        apiServerHostArray,
 		Dir:         apiServerDir,
-		DownloadDir: cache,
+		DownloadDir: softwareDownloadDir,
 		ServiceCIDR: config.K8s.CIDR.ServiceCIDR,
 		EtcdHost:    etcdHostArray,
 	}
@@ -176,7 +184,7 @@ func main() {
 	kubelet := pkg.Kubelet{
 		CoreDns:     dns,
 		Dir:         kubeletDir,
-		DownloadDir: cache,
+		DownloadDir: softwareDownloadDir,
 	}
 	kubelet.InstallKubelet("kubernetes", inventory)
 
@@ -192,7 +200,7 @@ func main() {
 		Vip:         config.Keepalived.Vip,
 		Port:        config.Haproxy.FrontendPort,
 		Dir:         kubeProxyDir,
-		DownloadDir: cache,
+		DownloadDir: softwareDownloadDir,
 		PodCIDR:     podCIDR,
 	}
 	kubeProxy.InstallProxy("kubernetes", inventory)
@@ -206,7 +214,7 @@ func main() {
 		}
 	}
 	calico := pkg.Calico{
-		DownloadDir: cache,
+		DownloadDir: softwareDownloadDir,
 		Url:         calicoUrl,
 		PodCIDR:     podCIDR,
 	}
@@ -216,7 +224,7 @@ func main() {
 	// TODO
 	coredns := pkg.CoreDns{
 		Dns:         dns,
-		DownloadDir: cache,
+		DownloadDir: softwareDownloadDir,
 	}
 	coredns.InstallCoreDns()
 }

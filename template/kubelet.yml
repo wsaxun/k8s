@@ -10,7 +10,7 @@
           mode: "0755"
       - name: copy service
         copy:
-          src: /tmp/kubelet.service
+          src: {{GetCache}}/kubelet.service
           dest: /usr/lib/systemd/system
       - name: mkdir kubernetes
         file:
@@ -33,7 +33,7 @@
           dest: /etc/kubernetes
       - name: copy kubelet config
         copy:
-          src: /tmp/kubelet-conf.yml
+          src: {{GetCache}}/kubelet-conf.yml
           dest: {{.Dir}}
       - name: copy ca pem
         copy:

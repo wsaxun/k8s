@@ -7,23 +7,31 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"text/template"
 )
 
-func Render(data interface{}, templateStr, fileName string) (path string) {
-	tmpl, err := template.New("t").Parse(templateStr)
-	defer tmpl.Clone()
+func GetCache() string {
+	return AnsibleCache
+}
 
+func Render(data interface{}, templateStr, fileName string) (path string) {
+	tmp := template.New(fileName)
+	tmp.Funcs(template.FuncMap{"GetCache": GetCache})
+	tmpl, err := tmp.Parse(templateStr)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	file, err := os.OpenFile("/tmp/"+fileName, os.O_CREATE|os.O_WRONLY, 0644)
+	file, err := os.OpenFile(filepath.Join(AnsibleCache, fileName), os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	if err != nil {
+		log.Fatalln(err)
+	}
 	defer file.Close()
 	err = tmpl.Execute(file, data)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	return "/tmp/" + fileName
+	return filepath.Join(AnsibleCache, fileName)
 }
 
 func Token() (tokenId, token string) {

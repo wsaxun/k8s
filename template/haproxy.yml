@@ -9,7 +9,7 @@
       state: present
     - name: config
       copy:
-        src: /tmp/haproxy.cfg
+        src: {{GetCache}}/haproxy.cfg
         dest: /etc/haproxy
     - name: start docker
       service:

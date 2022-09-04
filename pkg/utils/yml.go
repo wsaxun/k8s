@@ -6,6 +6,9 @@ import (
 	"log"
 )
 
+// cache
+var AnsibleCache = "/tmp/"
+
 // Default
 type Config struct {
 	K8s        K8s        `yaml:"k8s"`

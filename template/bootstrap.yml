@@ -36,4 +36,4 @@
         dest: /root/.kube/config
         state: link
     - name: create RBAC
-      shell: {{.DownloadDir}}/kubectl apply -f /tmp/bootstrap.secret.yml
+      shell: {{.DownloadDir}}/kubectl apply -f {{GetCache}}/bootstrap.secret.yml

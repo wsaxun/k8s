@@ -3,6 +3,7 @@ package pkg
 import (
 	"github.com/gobuffalo/packr"
 	"k8s/pkg/utils"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -14,7 +15,10 @@ func ConfigCsr(cache string, duration string) {
 	pkiPath := filepath.Join(cache, "/kubernetes/csr/")
 	_, err := os.Stat(pkiPath)
 	if err != nil {
-		os.MkdirAll(pkiPath, 0755)
+		err = os.MkdirAll(pkiPath, 0755)
+		if err != nil {
+			log.Fatalln(err)
+		}
 	}
 
 	var Info struct {
@@ -30,7 +34,10 @@ func ConfigCsr(cache string, duration string) {
 	for _, v := range files {
 		context, _ := box.FindString(v)
 		path := utils.Render(Info, context, v)
-		os.Rename(path, filepath.Join(pkiPath, v))
+		err := os.Rename(path, filepath.Join(pkiPath, v))
+		if err != nil {
+			log.Fatalln(err)
+		}
 
 	}
 }
@@ -70,8 +77,7 @@ func ApiServerCertHost(config utils.Config) string {
 }
 
 func EtcdHost(config utils.Config) string {
-	locahost := "127.0.0.1"
-	var hosts = locahost
+	var hosts string = "127.0.0.1"
 	for _, v := range config.K8s.Master.Components {
 		if v.Name != "etcd" {
 			continue

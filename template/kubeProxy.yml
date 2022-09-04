@@ -10,7 +10,7 @@
           mode: "0755"
       - name: copy service
         copy:
-          src: /tmp/kube-proxy.service
+          src: {{GetCache}}/kube-proxy.service
           dest: /usr/lib/systemd/system
       - name: mkdir kubernetes
         file:
@@ -29,7 +29,7 @@
           mode: "0755"
       - name: copy kube-proxy config
         copy:
-          src: /tmp/kube-proxy.config.yml
+          src: {{GetCache}}/kube-proxy.config.yml
           dest: {{.Dir}}
       - name: copy kube-proxy kubeconfig
         copy:

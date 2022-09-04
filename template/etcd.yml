@@ -27,7 +27,7 @@
             chmod +x {{.Dir}}/etcd*
     - name: copy service
       copy:
-        src: /tmp/etcd.service
+        src: {{GetCache}}/etcd.service
         dest: /usr/lib/systemd/system
     - name: daemon-reload
       shell: systemctl daemon-reload
@@ -35,7 +35,7 @@
 - hosts: {{$v}}
     - name: config
       copy:
-        src: /tmp/etcd.config.yml_{{$v}}
+        src: {{GetCache}}/etcd.config.yml_{{$v}}
         dest: {{$.Dir}}/etcd.config.yml
     - name: start etcd
       service:
