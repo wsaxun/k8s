@@ -1,44 +1,44 @@
 [kubernetes]
-{{range $i, $v := .Kubernetes}}
+{{- range $i, $v := .Kubernetes}}
 {{$v}}
-{{end}}
+{{- end}}
 
 [master]
-{{range $i, $v := .Master}}
+{{- range $i, $v := .Master}}
 {{$v}}
-{{end}}
+{{- end}}
 
 [etcd]
-{{range $i, $v := .EtcdHost}}
+{{- range $i, $v := .EtcdHost}}
 {{$v}}
-{{end}}
+{{- end}}
 
 [api-server]
-{{range $i, $v := .ApiServerHost}}
+{{- range $i, $v := .ApiServerHost}}
 {{$v}}
-{{end}}
+{{- end}}
 
 [scheduler]
-{{range $i, $v := .SchedulerHost}}
+{{- range $i, $v := .SchedulerHost}}
 {{$v}}
-{{end}}
+{{- end}}
 
 [controller-manager]
-{{range $i, $v := .ControllerManagerHost}}
+{{- range $i, $v := .ControllerManagerHost}}
 {{$v}}
-{{end}}
+{{- end}}
 
 [node]
-{{range $i, $v := .NodeHost}}
+{{- range $i, $v := .NodeHost}}
 {{$v}}
-{{end}}
+{{- end}}
 
 [haproxy]
-{{range $i, $v := .HaproxyHost}}
+{{- range $i, $v := .HaproxyHost}}
 {{$v}}
-{{end}}
+{{- end}}
 
 [keepalived]
-{{range $i, $v := .KeepalivedHost}}
+{{- range $i, $v := .KeepalivedHost}}
 {{$v}}
-{{end}}
+{{- end}}
