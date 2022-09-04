@@ -24,9 +24,7 @@ func main() {
 	var etcdName string
 	for _, v := range urls {
 		if strings.Index(v, "etcd") >= 1 {
-			tmp := strings.Split(v, "/")
-			length := len(tmp)
-			etcdName = tmp[length-1]
+			etcdName = utils.FileName(v)
 		}
 	}
 

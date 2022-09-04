@@ -38,7 +38,11 @@ func Render(data interface{}, templateStr, fileName string) (path string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			log.Fatalln(err)
+		}
+	}()
 	err = tmpl.Execute(file, data)
 	if err != nil {
 		log.Fatalln(err)
@@ -60,4 +64,11 @@ func Cmd(name string, args ...string) string {
 		log.Fatalln(err)
 	}
 	return string(out)
+}
+
+func FileName(url string) string {
+	tmp := strings.Split(url, "/")
+	length := len(tmp)
+	name := tmp[length-1]
+	return name
 }
