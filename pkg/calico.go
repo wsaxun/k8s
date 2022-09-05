@@ -21,10 +21,13 @@ func (c *Calico) Install() {
 		cmd = "cd " + c.DownloadDir + " && wget " + c.Url
 		utils.Cmd("bash", "-c", cmd)
 	}
-	cmd = "cd " + c.DownloadDir + ` &&sed -i 's@# - name: CALICO_IPV4POOL_CIDR@- name: CALICO_IPV4POOL_CIDR@g' ` + fileName
+	cmd = "cd " + c.DownloadDir + " && /usr/bin/cp -f  " + fileName + " calico.yml"
 	utils.Cmd("bash", "-c", cmd)
-	cmd = "cd " + c.DownloadDir + ` &&sed -i 's@#   value: "192.168.0.0/16"@  value: "` + c.PodCIDR + `"@g'` + fileName
+
+	cmd = "cd " + c.DownloadDir + ` &&sed -i 's@# - name: CALICO_IPV4POOL_CIDR@- name: CALICO_IPV4POOL_CIDR@g' calico.yml`
 	utils.Cmd("bash", "-c", cmd)
-	cmd = "cd " + c.DownloadDir + " && ./kubectl apply -f " + fileName
+	cmd = "cd " + c.DownloadDir + ` &&sed -i 's@#   value: "192.168.0.0/16"@  value: "` + c.PodCIDR + `"@g' calico.yml`
+	utils.Cmd("bash", "-c", cmd)
+	cmd = "cd " + c.DownloadDir + " && ./kubectl apply -f calico.yml"
 	utils.Cmd("bash", "-c", cmd)
 }

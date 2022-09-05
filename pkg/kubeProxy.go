@@ -49,7 +49,7 @@ func (p *Proxy) kubeConfig(inventory string) {
 	utils.Cmd("bash", "-c", cmd)
 	cmd = p.DownloadDir + `/kubectl -n kube-system get sa/kube-proxy --output=jsonpath='{.secrets[0].name}'`
 	secrete := utils.Cmd("bash", "-c", cmd)
-	cmd = p.DownloadDir + `/kubectl -n kube-system get secret/` + secrete + `--output=jsonpath='{.data.token}' | base64 -d`
+	cmd = p.DownloadDir + `/kubectl -n kube-system get secret/` + secrete + `   --output=jsonpath='{.data.token}' | base64 -d`
 	token := utils.Cmd(cmd)
 	type info struct {
 		DownloadDir string
