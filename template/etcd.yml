@@ -34,7 +34,7 @@
     - name: stop etcd
       service:
         name: etcd
-        state: stop
+        state: stopped
       ignore_errors: yes
     - name: rm {{.DataDir}}/member
       file:
