@@ -39,7 +39,7 @@
     - name: rsync kube-proxy kubeconfig
       copy:
         src: {{.DownloadDir}}/kubernetes/kube-proxy.kubeconfig
-        dest: {{.Dir}}/kubernetes
+        dest: /etc/kubernetes
     - name: rsync ca pem
       copy:
         src:  {{.DownloadDir}}/kubernetes/pki/ca.pem
