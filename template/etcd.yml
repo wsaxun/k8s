@@ -64,4 +64,5 @@
         name: etcd
         state: started
         enabled: yes
+      ignore_errors: yes
 {{end}}
