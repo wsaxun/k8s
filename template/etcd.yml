@@ -36,9 +36,14 @@
         name: etcd
         state: stop
       ignore_errors: yes
-    - name: rm {{.DataDir}}
+    - name: rm {{.DataDir}}/member
       file:
-        path: {{.DdataDir}}
+        path: {{.DataDir}}/member
+        state: absent
+      ignore_errors: yes
+    - name: rm {{.DataDir}}/wal
+      file:
+        path: {{.DataDir}}/wal
         state: absent
       ignore_errors: yes
     - name: mkdir {{.DataDir}}
