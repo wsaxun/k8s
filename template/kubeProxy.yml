@@ -1,56 +1,60 @@
 ---
 - hosts: {{.Host}}
   remote_user: root
-    gather_facts: no                                        # 默认执行setup模块，禁用此setup选项
-    tasks:                                                    # 一个task 只能有一个模块元素
-      - name: rsync binary file to {{.Dir}}
-        copy:
-          src: {{.DownloadDir}}/kube-proxy
-          dest: {{.Dir}}
-          mode: "0755"
-      - name: create kube-proxy service
-        copy:
-          src: {{GetCache}}/kube-proxy.service
-          dest: /usr/lib/systemd/system
-      - name: mkdir /etc/kubernetes/manifests
-        file:
-          path: /etc/kubernetes/manifests
-          state: directory
-          mode: "0755"
-      - name: mkdir /etc/kubernetes/pki
-        file:
-          path: /etc/kubernetes/pki
-          state: directory
-          mode: "0755"
-      - name: mkdir {{.Dir}}/log
-        file:
-          path: {{.Dir}}/log
-          state: directory
-          mode: "0755"
-      - name: rsync kube-proxy config
-        copy:
-          src: {{GetCache}}/kube-proxy.config.yml
-          dest: {{.Dir}}
-      - name: rsync kube-proxy kubeconfig
-        copy:
-          src: {{.DownloadDir}}/kubernetes/kube-proxy.kubeconfig
-          dest: {{.Dir}}/kubernetes
-      - name: rsync ca pem
-        copy:
-          src:  {{.DownloadDir}}/kubernetes/pki/ca.pem
-          dest: /etc/kubernetes/pki
-      - name: rsync ca key
-        copy:
-          src:  {{.DownloadDir}}/kubernetes/pki/ca-key.pem
-          dest: /etc/kubernetes/pki
-      - name: rsync front-proxy-ca pem
-        copy:
-          src:  {{.DownloadDir}}/kubernetes/pki/front-proxy-ca.pem
-          dest: /etc/kubernetes/pki
-      - name: systemctl daeme-reload
-        shell: systemctl daemon-reload
-      - name: start kube-proxy
-        service:
-          name: kube-proxy
-          state: restarted
-          enabled: yes
+  gather_facts: no                                        # 默认执行setup模块，禁用此setup选项
+  tasks:                                                    # 一个task 只能有一个模块元素
+    - name: mkdir kubproxy directory
+      file:
+        path: {{.Dir}
+        mode: "0755"
+    - name: rsync binary file to {{.Dir}}
+      copy:
+        src: {{.DownloadDir}}/kube-proxy
+        dest: {{.Dir}}
+        mode: "0755"
+    - name: create kube-proxy service
+      copy:
+        src: {{GetCache}}/kube-proxy.service
+        dest: /usr/lib/systemd/system
+    - name: mkdir /etc/kubernetes/manifests
+      file:
+        path: /etc/kubernetes/manifests
+        state: directory
+        mode: "0755"
+    - name: mkdir /etc/kubernetes/pki
+      file:
+        path: /etc/kubernetes/pki
+        state: directory
+        mode: "0755"
+    - name: mkdir {{.Dir}}/log
+      file:
+        path: {{.Dir}}/log
+        state: directory
+        mode: "0755"
+    - name: rsync kube-proxy config
+      copy:
+        src: {{GetCache}}/kube-proxy.config.yml
+        dest: {{.Dir}}
+    - name: rsync kube-proxy kubeconfig
+      copy:
+        src: {{.DownloadDir}}/kubernetes/kube-proxy.kubeconfig
+        dest: {{.Dir}}/kubernetes
+    - name: rsync ca pem
+      copy:
+        src:  {{.DownloadDir}}/kubernetes/pki/ca.pem
+        dest: /etc/kubernetes/pki
+    - name: rsync ca key
+      copy:
+        src:  {{.DownloadDir}}/kubernetes/pki/ca-key.pem
+        dest: /etc/kubernetes/pki
+    - name: rsync front-proxy-ca pem
+      copy:
+        src:  {{.DownloadDir}}/kubernetes/pki/front-proxy-ca.pem
+        dest: /etc/kubernetes/pki
+    - name: systemctl daeme-reload
+      shell: systemctl daemon-reload
+    - name: start kube-proxy
+      service:
+        name: kube-proxy
+        state: restarted
+        enabled: yes

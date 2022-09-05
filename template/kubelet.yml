@@ -2,55 +2,59 @@
 - hosts: {{.Host}}
   remote_user: root
   gather_facts: no                                        # 默认执行setup模块，禁用此setup选项
-    tasks:                                                    # 一个task 只能有一个模块元素
-      - name: rsync binary file to {{.Dir}}
-        copy:
-          src: {{.DownloadDir}}/kubelet
-          dest: {{.Dir}}
-          mode: "0755"
-      - name: create kubelet service
-        copy:
-          src: {{GetCache}}/kubelet.service
-          dest: /usr/lib/systemd/system
-      - name: mkdir /etc/kubernetes/manifests
-        file:
-          path: /etc/kubernetes/manifests
-          state: directory
-          mode: "0755"
-      - name: mkdir /etc/kubernetes/pki
-        file:
-          path: /etc/kubernetes/pki
-          state: directory
-          mode: "0755"
-      - name: mkdir {{.Dir}}/log
-        file:
-          path: {{.Dir}}/log
-          state: directory
-          mode: "0755"
-      - name: rsync bootstrap config to /etc/kubernetes
-        copy:
-          src: {{.DownloadDir}}/kubernetes/bootstrap-kubelet.kubeconfig
-          dest: /etc/kubernetes
-      - name: rync kubelet config to {{.Dir}}
-        copy:
-          src: {{GetCache}}/kubelet-conf.yml
-          dest: {{.Dir}}
-      - name: rsync ca pem to /etc/kubernetes/pki
-        copy:
-          src:  {{.DownloadDir}}/kubernetes/pki/ca.pem
-          dest: /etc/kubernetes/pki
-      - name: rsync ca key to /etc/kubernetes/pki
-        copy:
-          src:  {{.DownloadDir}}/kubernetes/pki/ca-key.pem
-          dest: /etc/kubernetes/pki
-      - name: rsync front-proxy-ca pem to /etc/kubernetes/pki
-        copy:
-          src:  {{.DownloadDir}}/kubernetes/pki/front-proxy-ca.pem
-          dest: /etc/kubernetes/pki
-      - name: systemctl daeme-reload
-        shell: systemctl daemon-reload
-      - name: start kubelet
-        service:
-          name: kubelet
-          state: restarted
-          enabled: yes
+  tasks:                                                    # 一个task 只能有一个模块元素
+    - name: mkdir kublet directory
+      file:
+        path: {{.Dir}
+        mode: "0755"
+    - name: rsync binary file to {{.Dir}}
+      copy:
+        src: {{.DownloadDir}}/kubelet
+        dest: {{.Dir}}
+        mode: "0755"
+    - name: create kubelet service
+      copy:
+        src: {{GetCache}}/kubelet.service
+        dest: /usr/lib/systemd/system
+    - name: mkdir /etc/kubernetes/manifests
+      file:
+        path: /etc/kubernetes/manifests
+        state: directory
+        mode: "0755"
+    - name: mkdir /etc/kubernetes/pki
+      file:
+        path: /etc/kubernetes/pki
+        state: directory
+        mode: "0755"
+    - name: mkdir {{.Dir}}/log
+      file:
+        path: {{.Dir}}/log
+        state: directory
+        mode: "0755"
+    - name: rsync bootstrap config to /etc/kubernetes
+      copy:
+        src: {{.DownloadDir}}/kubernetes/bootstrap-kubelet.kubeconfig
+        dest: /etc/kubernetes
+    - name: rync kubelet config to {{.Dir}}
+      copy:
+        src: {{GetCache}}/kubelet-conf.yml
+        dest: {{.Dir}}
+    - name: rsync ca pem to /etc/kubernetes/pki
+      copy:
+        src:  {{.DownloadDir}}/kubernetes/pki/ca.pem
+        dest: /etc/kubernetes/pki
+    - name: rsync ca key to /etc/kubernetes/pki
+      copy:
+        src:  {{.DownloadDir}}/kubernetes/pki/ca-key.pem
+        dest: /etc/kubernetes/pki
+    - name: rsync front-proxy-ca pem to /etc/kubernetes/pki
+      copy:
+        src:  {{.DownloadDir}}/kubernetes/pki/front-proxy-ca.pem
+        dest: /etc/kubernetes/pki
+    - name: systemctl daeme-reload
+      shell: systemctl daemon-reload
+    - name: start kubelet
+      service:
+        name: kubelet
+        state: restarted
+        enabled: yes
