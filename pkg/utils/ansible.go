@@ -61,10 +61,9 @@ func Playbook(yml string, hosts string) {
 	}
 
 	res, err = results.ParseJSONResultsStream(io.Reader(buff))
+	fmt.Println(res.String())
 	if err != nil {
-		fmt.Println(res.String())
 		log.Fatalln(err)
 	}
 
-	fmt.Println(res.String())
 }
