@@ -5,8 +5,9 @@
   tasks:                                                    # 一个task 只能有一个模块元素
     - name: mkdir kublet directory
       file:
-        path: {{.Dir}
+        path: {{.Dir}}
         mode: "0755"
+        state: directory
     - name: rsync binary file to {{.Dir}}
       copy:
         src: {{.DownloadDir}}/kubelet
@@ -37,7 +38,7 @@
         dest: /etc/kubernetes
     - name: rync kubelet config to {{.Dir}}
       copy:
-        src: {{GetCache}}/kubelet-conf.yml
+        src: {{GetCache}}/kubelet-config.yml
         dest: {{.Dir}}
     - name: rsync ca pem to /etc/kubernetes/pki
       copy:

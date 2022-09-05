@@ -5,8 +5,9 @@
   tasks:                                                    # 一个task 只能有一个模块元素
     - name: mkdir kubproxy directory
       file:
-        path: {{.Dir}
+        path: {{.Dir}}
         mode: "0755"
+        state: directory
     - name: rsync binary file to {{.Dir}}
       copy:
         src: {{.DownloadDir}}/kube-proxy
