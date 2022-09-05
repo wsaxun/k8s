@@ -3,7 +3,7 @@
   remote_user: root
   gather_facts: no                                        # 默认执行setup模块，禁用此setup选项
   tasks:                                                    # 一个task 只能有一个模块元素
-    - name: yum install
+    - name: master computer --- yum install software...
       yum:
         name:
           - yum-utils
@@ -16,23 +16,23 @@
           - conntrack
           - libseccomp
         state: present
-    - name: stop firewalld
+    - name: master computer --- stop firewalld
       service:
         name: firewalld
         state: stopped
         enabled: no
-    - name: stop NetworkManager
+    - name: master computer --- stop NetworkManager
       service:
         name: firewalld
         state: stopped
         enabled: no
-    - name: disenabled selinux
+    - name: master computer --- disenabled selinux
       shell: setenforce 0 && sed -i 's@SELINUX=enforcing@SELINUX=disabled@g'  /etc/selinux/config
       ignore_errors: yes
-    - name: disenabled swapp
+    - name: master computer --- disenabled swapp
       shell: swapoff -a && sysctl -w vm.swappiness=0 && sed -ri '/^[^#]*swap/s@^@#@' /etc/fstab
       ignore_errors: yes
-    - name: ulimit
+    - name: master computer --- create /etc/security/limits.d/30-limit.conf
       shell:
         cmd: |
           cat > /etc/security/limits.d/30-limit.conf << EOF
@@ -43,9 +43,9 @@
           * soft memlock unlimited
           * hard memlock unlimited
           EOF
-    - name: ulimit shell
+    - name: master computer --- ulimit command
       shell: ulimit  -SHn  65536
-    - name: sysctl
+    - name: master computer --- create /etc/sysctl.d/k8s.conf
       shell:
         cmd: |
           cat > /etc/sysctl.d/k8s.conf << EOF
@@ -54,7 +54,7 @@
           net.ipv4.ip_forward = 1
           vm.swappiness=0
           EOF
-    - name: enable br_netfilter
+    - name: master computer --- enable br_netfilter
       shell:
         cmd: |
           cat > /etc/sysconfig/modules/ipvs.modules << EOF
@@ -68,5 +68,5 @@
           EOF
           chmod +x /etc/sysconfig/modules/ipvs.modules && modprobe br_netfilter
       ignore_errors: yes
-    - name: load
+    - name: master computer --- reload /etc/sysctl.d/k8s.conf
       shell: sysctl -p /etc/sysctl.d/k8s.conf

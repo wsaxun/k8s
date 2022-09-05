@@ -3,29 +3,29 @@
   remote_user: root
   gather_facts: no                                        # 默认执行setup模块，禁用此setup选项
   tasks:                                                    # 一个task 只能有一个模块元素
-    - name:   sync kubernets
+    - name: sync kubernets directory to /etc
       copy:
         src: {{.DownloadDir}}/kubernetes
         dest: /etc
-    - name: mkdir binary dir
+    - name: mkdir binary direcotry
       file:
         path: {{.Dir}}
         state: directory
         mode: '0755'
-    - name: copy bianry file
+    - name: rsync etcd tar.gz to /tmp
       copy:
         src: {{.DownloadDir}}/{{.EtcdName}}
         dest: /tmp
-    - name: unarchive
+    - name: unarchive etcd tar.gz
       unarchive:
         src: /tmp/{{.EtcdName}}
         dest: /tmp
-    - name: mv file
+    - name: mv file to {{.Dir}}
       shell:
         cmd: |
           /usr/bin/mv -f /tmp/etcd-*/etcd /tmp/etcd-*/etcdctl {{.Dir}}
           chmod +x {{.Dir}}/etcd*
-    - name: copy service
+    - name: create etcd service
       copy:
         src: {{GetCache}}/etcd.service
         dest: /usr/lib/systemd/system
@@ -36,13 +36,13 @@
   remote_user: root
   gather_facts: no                                        # 默认执行setup模块，禁用此setup选项
   tasks:                                                    # 一个task 只能有一个模块元素
-    - name: config
+    - name: rsync etcd.config.yml to {{$v}}
       copy:
         src: {{GetCache}}/etcd.config.yml_{{$v}}
         dest: {{$.Dir}}/etcd.config.yml
     - name: start etcd
       service:
         name: etcd
-        state: started
+        state: restarted
         enabled: yes
 {{end}}

@@ -3,7 +3,7 @@
   remote_user: root
   gather_facts: no                                        # 默认执行setup模块，禁用此setup选项
   tasks:                                                    # 一个task 只能有一个模块元素
-    - name: install keepalived
+    - name: yum install keepalived
       yum:
         name:
           - keepalived
@@ -13,7 +13,7 @@
   remote_user: root
   gather_facts: no                                        # 默认执行setup模块，禁用此setup选项
   tasks:
-    - name: config
+    - name: rsync keepalived.conf
       copy:
         src: {{GetCache}}/keepalived.conf_{{$v}}
         dest: /etc/keepalived/keepalived.conf

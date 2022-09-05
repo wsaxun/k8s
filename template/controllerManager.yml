@@ -3,7 +3,7 @@
   remote_user: root
   gather_facts: no                                        # 默认执行setup模块，禁用此setup选项
   tasks:                                                    # 一个task 只能有一个模块元素
-    - name:   sync kubernets
+    - name:  sync kubernets directory to /etc
       copy:
         src: {{.DownloadDir}}/kubernetes
         dest: /etc
@@ -12,12 +12,12 @@
         path: {{.Dir}}/log
         state: directory
         mode: '0755'
-    - name: copy bianry file
+    - name: rsync bianry file to  {{.Dir}}
       copy:
         src: {{.DownloadDir}}/kube-controller-manager
         dest: {{.Dir}}
         mode: '0755'
-    - name: copy service
+    - name: create kube-controller-manager service
       copy:
         src: {{GetCache}}/kube-controller-manager.service
         dest: /usr/lib/systemd/system
@@ -26,5 +26,5 @@
     - name: start kube-controller-manager
       service:
         name: kube-controller-manager
-        state: started
+        state: restarted
         enabled: yes

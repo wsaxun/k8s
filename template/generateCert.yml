@@ -19,7 +19,7 @@
             -config={{.DownloadDir}}/kubernetes/csr/ca-config.json \
             -hostname={{.Etcdhost}} \
             -profile=kubernetes \
-           {{.DownloadDir}}/kubernetes/csr/etcd-csr.json | {{.DownloadDir}}/cfssljson_* \
+            {{.DownloadDir}}/kubernetes/csr/etcd-csr.json | {{.DownloadDir}}/cfssljson_* \
             -bare {{.DownloadDir}}/kubernetes/pki/etcd/etcd
     - name: generate ca cert
       shell:
@@ -34,7 +34,7 @@
             -config={{.DownloadDir}}/kubernetes/csr/ca-config.json \
             -hostname={{.Allhost}} \
             -profile=kubernetes \
-          {{.DownloadDir}}/kubernetes/csr/apiserver-csr.json | {{.DownloadDir}}/cfssljson_* \
+            {{.DownloadDir}}/kubernetes/csr/apiserver-csr.json | {{.DownloadDir}}/cfssljson_* \
             -bare {{.DownloadDir}}/kubernetes/pki/apiserver
     - name: generate ca cert
       shell:
@@ -48,7 +48,7 @@
             -ca-key={{.DownloadDir}}/kubernetes/pki/front-proxy-ca-key.pem \
             -config={{.DownloadDir}}/kubernetes/csr/ca-config.json \
             -profile=kubernetes \
-           {{.DownloadDir}}/kubernetes/csr/front-proxy-client-csr.json | {{.DownloadDir}}/cfssljson_* \
+            {{.DownloadDir}}/kubernetes/csr/front-proxy-client-csr.json | {{.DownloadDir}}/cfssljson_* \
             -bare {{.DownloadDir}}/kubernetes/pki/front-proxy-client
     - name: generate controller-manager cert
       shell:
@@ -56,8 +56,8 @@
            {{.DownloadDir}}/cfssl_*  gencert -ca={{.DownloadDir}}/kubernetes/pki/ca.pem \
             -ca-key={{.DownloadDir}}/kubernetes/pki/ca-key.pem \
             -config={{.DownloadDir}}/kubernetes/csr/ca-config.json \
-             -profile=kubernetes \
-           {{.DownloadDir}}/kubernetes/csr/manager-csr.json | {{.DownloadDir}}/cfssljson_* \
+            -profile=kubernetes \
+            {{.DownloadDir}}/kubernetes/csr/manager-csr.json | {{.DownloadDir}}/cfssljson_* \
              -bare {{.DownloadDir}}/kubernetes/pki/controller-manager
     - name: genrate scheduler cert
       shell:
@@ -67,7 +67,7 @@
            -config={{.DownloadDir}}/kubernetes/csr/ca-config.json \
            -profile=kubernetes \
            {{.DownloadDir}}/kubernetes/csr/scheduler-csr.json |{{.DownloadDir}}/cfssljson_* \
-          -bare  {{.DownloadDir}}/kubernetes/pki/scheduler
+           -bare  {{.DownloadDir}}/kubernetes/pki/scheduler
     - name: genrate admin cert
       shell:
         cmd: |
