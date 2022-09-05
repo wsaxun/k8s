@@ -52,6 +52,11 @@
       copy:
         src:  {{.DownloadDir}}/kubernetes/pki/front-proxy-ca.pem
         dest: /etc/kubernetes/pki
+    - name: rm kubelet kubeconfig
+      file:
+        path: /etc/kubernetes/kubelet.kubeconfig
+        state: absent
+      ignore_errors: yes
     - name: systemctl daeme-reload
       shell: systemctl daemon-reload
     - name: start kubelet
