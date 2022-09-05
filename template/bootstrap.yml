@@ -30,6 +30,11 @@
       file:
         path: /root/.kube
         state: directory
+    - name: copy kubectl
+      copy:
+        src: {{.DownloadDir}}/kubectl
+        dest: /root
+        mode: "0755"
     - name: soft link kubeconfig
       file:
         src: /etc/kubernetes/admin.kubeconfig
