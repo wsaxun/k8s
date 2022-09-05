@@ -3,6 +3,7 @@ package pkg
 import (
 	"github.com/gobuffalo/packr"
 	"k8s/pkg/utils"
+	"log"
 )
 
 type Proxy struct {
@@ -43,14 +44,19 @@ func (p *Proxy) config(inventory string) {
 }
 
 func (p *Proxy) kubeConfig(inventory string) {
+	log.Println("create serviceaccount")
 	cmd := p.DownloadDir + "/kubectl " + "-n kube-system create serviceaccount kube-proxy"
 	utils.Cmd("bash", "-c", cmd)
+	log.Println("create clusterrolebinding")
 	cmd = p.DownloadDir + "/kubectl create clusterrolebinding system:kube-proxy --clusterrole system:node-proxier --serviceaccount kube-system:kube-proxy"
 	utils.Cmd("bash", "-c", cmd)
+	log.Println("get sa/kube-proxy")
 	cmd = p.DownloadDir + `/kubectl -n kube-system get sa/kube-proxy --output=jsonpath='{.secrets[0].name}'`
 	secrete := utils.Cmd("bash", "-c", cmd)
+	log.Println("get token")
 	cmd = p.DownloadDir + `/kubectl -n kube-system get secret/` + secrete + `   --output=jsonpath='{.data.token}' | /usr/bin/base64 -d`
 	token := utils.Cmd("bash", "-c", cmd)
+	log.Println("exec over")
 	type info struct {
 		DownloadDir string
 		Vip         string
