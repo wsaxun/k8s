@@ -71,6 +71,7 @@ func Cmd(name string, args ...string) string {
 	command := exec.Command(name, args...)
 	out, err := command.CombinedOutput()
 	if err != nil {
+		log.Println(name, args, string(out))
 		log.Fatalln(err)
 	}
 	return string(out)

@@ -29,7 +29,7 @@ func main() {
 		}
 	}
 
-	// generate ansible inventory
+	//generate ansible inventory
 	log.Println("generate ansible hosts")
 	inventory := pkg.Inventory(config)
 
