@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	log.Println("k8s start install")
 	// parser install yml
 	config := utils.ParserYml("./configs/install.yml")
 	softwareDownloadDir := config.Packages.DownloadDir
@@ -29,10 +30,13 @@ func main() {
 	}
 
 	// generate ansible inventory
+	log.Println("generate ansible hosts")
 	inventory := pkg.Inventory(config)
 
 	// download
 	// TODO
+	log.Println("download software")
+
 	software := pkg.Software{
 		DownloadPackage: softwareDownloadDir,
 		URL:             urls,
@@ -40,20 +44,27 @@ func main() {
 	software.DownloadPackages(inventory)
 
 	// generate cert
+	log.Println("generate cert")
+
 	pkg.ConfigCsr(softwareDownloadDir, config.K8s.Certificate)
 	allHost := pkg.ApiServerCertHost(config)
 	etcdHost := pkg.EtcdHost(config)
 	pkg.Cert(softwareDownloadDir, etcdHost, allHost, inventory)
 
 	// generate kubeconfig
+	log.Println("generate kubconfig")
 	pkg.KubeConfig(softwareDownloadDir, config.Keepalived.Vip, config.Haproxy.FrontendPort, inventory)
 
 	// init env
 	// TODO
+	log.Println("init master computer")
 	pkg.InitMasterEnv("master", inventory)
+	log.Println("init node computer")
 	pkg.InitNodeEnv("node", inventory)
 
 	// install docker
+	log.Println("install docker")
+
 	yumRepo := config.Docker.YumRepo
 	dataRoot := config.Docker.DataRoot
 	mirror := config.Docker.RegistryMirrors
@@ -67,6 +78,8 @@ func main() {
 
 	// install haproxy
 	// TODO
+	log.Println("install haproxy")
+
 	haproxyHost := make(map[string]string)
 	for k, v := range config.Haproxy.Hosts {
 		haproxyHost["haproxy"+strconv.Itoa(k+1)] = v
@@ -79,6 +92,8 @@ func main() {
 
 	// install keepalived
 	// TODO
+	log.Println("install keepalived")
+
 	keepalived := pkg.Keepalived{
 		Interface: config.Keepalived.Interface,
 		Host:      config.Keepalived.Hosts,
@@ -88,6 +103,8 @@ func main() {
 
 	// install etcd
 	// TODO
+	log.Println("install etcd")
+
 	var dataDir string
 	var dir string
 	var etcdHostArray []string
@@ -109,6 +126,8 @@ func main() {
 
 	// install apiServer
 	// TODO
+	log.Println("install api-server")
+
 	var apiServerDir string
 	var apiServerHostArray []string
 	for _, v := range config.K8s.Master.Components {
@@ -128,6 +147,8 @@ func main() {
 
 	// install controllerManager
 	// TODO
+	log.Println("install controllerManager")
+
 	var contrDir string
 	var podCIDR string
 	for _, v := range config.K8s.Master.Components {
@@ -149,6 +170,8 @@ func main() {
 
 	// install scheduler
 	// TODO
+	log.Println("install scheduler")
+
 	var schedulerDir string
 	for _, v := range config.K8s.Master.Components {
 		if v.Name == "scheduler" {
@@ -163,6 +186,8 @@ func main() {
 
 	// install bootstrap
 	// TODO
+	log.Println("config bootstrap")
+
 	bootstrap := pkg.Bootstrap{
 		DownloadDir: config.Packages.DownloadDir,
 		Vip:         config.Keepalived.Vip,
@@ -172,6 +197,8 @@ func main() {
 
 	// install kubelet
 	// TODO
+	log.Println("install kubelet")
+
 	var dns string
 	var kubeletDir string
 	for _, v := range config.K8s.Plugin {
@@ -193,6 +220,8 @@ func main() {
 
 	// install kube-proxy
 	// TODO
+	log.Println("install kube-haproxy")
+
 	var kubeProxyDir string
 	for _, v := range config.K8s.Node.Components {
 		if v.Name == "kubproxy" {
@@ -210,6 +239,8 @@ func main() {
 
 	// install calico
 	// TODO
+	log.Println("install calico")
+
 	var calicoUrl string
 	for _, v := range config.K8s.Plugin {
 		if v.Name == "calico" {
@@ -225,6 +256,8 @@ func main() {
 
 	// install coredns
 	// TODO
+	log.Println("install coreDns")
+
 	coredns := pkg.CoreDns{
 		Dns:         dns,
 		DownloadDir: softwareDownloadDir,
