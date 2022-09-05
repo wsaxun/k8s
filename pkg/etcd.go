@@ -32,6 +32,7 @@ func (e *Etcd) Install(host string, inventory string) {
 		DownloadDir string
 		Dir         string
 		EtcdName    string
+		DataDir     string
 	}
 	content := info{
 		Host:        host,
@@ -39,6 +40,7 @@ func (e *Etcd) Install(host string, inventory string) {
 		Dir:         e.Dir,
 		DownloadDir: e.DownloadDir,
 		EtcdName:    e.EtcdName,
+		DataDir:     e.DataDir,
 	}
 	path := utils.Render(content, yml, ymlName)
 	utils.Playbook(path, inventory)

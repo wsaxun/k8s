@@ -31,6 +31,20 @@
         dest: /usr/lib/systemd/system
     - name: daemon-reload
       shell: systemctl daemon-reload
+    - name: stop etcd
+      service:
+        name: etcd
+        state: stop
+      ignore_errors: yes
+    - name: rm {{.DataDir}}
+      file:
+        path: {{.DdataDir}}
+        state: absent
+      ignore_errors: yes
+    - name: mkdir {{.DataDir}}
+      file:
+        path: {{.DataDir}}
+        state: directory
 {{range $i, $v :=  .AllHost}}
 - hosts: {{$v}}
   remote_user: root
@@ -43,6 +57,6 @@
     - name: start etcd
       service:
         name: etcd
-        state: restarted
+        state: started
         enabled: yes
 {{end}}
