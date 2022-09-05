@@ -3,13 +3,11 @@
   remote_user: root
   gather_facts: no                                        # 默认执行setup模块，禁用此setup选项
   tasks:                                                    # 一个task 只能有一个模块元素
-    - name: sync kubernets directory to /etc
-      copy:
-        src: {{.DownloadDir}}/kubernetes
-        dest: /etc
+    - name:  nothing to do
+      shell: echo
 {{- range $i, $v := .Record}}
     - name: add oneline to hosts
       lineinfile:
         dest: /etc/hosts
-        line: {{$v}}
+        line: {{$v}}  {{$i}}
 {{- end}}
