@@ -14,10 +14,15 @@ type Etcd struct {
 	Dir         string
 	DownloadDir string
 	EtcdName    string
+	Record      map[string]string
 }
 
 func (e *Etcd) Install(host string, inventory string) {
 	e.config()
+
+	//add hosts
+	e.addEtcdHosts(host, inventory)
+
 	ymlName := "etcd.yml"
 	box := packr.NewBox("../template")
 	yml, _ := box.FindString(ymlName)
@@ -57,13 +62,16 @@ func (e *Etcd) config() {
 	}
 	// k8s-master01=https://192.168.58.129:2380,k8s-master02=https://192.168.58.130:2380,k8s-master03=https://192.168.58.131:2380
 	cluster := ""
+	recordMap := make(map[string]string)
 	for index, host := range e.Host {
 		if cluster == "" {
 			cluster = cluster + fmt.Sprintf("etcd%d=https://%s:2380", index, host)
 		} else {
 			cluster = cluster + fmt.Sprintf(",etcd%d=https://%s:2380", index, host)
 		}
+		recordMap[fmt.Sprintf("etcd%d", index)] = host
 	}
+	e.Record = recordMap
 	tplData.Cluster = cluster
 	for index, host := range e.Host {
 		tplData.Name = "etcd" + strconv.Itoa(index)
@@ -77,4 +85,20 @@ func (e *Etcd) config() {
 	}
 	serviceInfo := info{Dir: e.Dir}
 	utils.Render(serviceInfo, service, "etcd.service")
+}
+
+func (e *Etcd) addEtcdHosts(host, inventory string) {
+	ymlName := "addEtcdHosts.yml"
+	box := packr.NewBox("../template")
+	yml, _ := box.FindString(ymlName)
+	type info struct {
+		Host   string
+		Record map[string]string
+	}
+	content := info{
+		Host:   host,
+		Record: e.Record,
+	}
+	path := utils.Render(content, yml, ymlName)
+	utils.Playbook(path, inventory)
 }
