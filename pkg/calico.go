@@ -21,13 +21,17 @@ func (c *Calico) Install() {
 		cmd = "cd " + c.DownloadDir + " && wget " + c.Url
 		utils.Cmd("bash", "-c", cmd)
 	}
-	cmd = "cd " + c.DownloadDir + " && /usr/bin/cp -f  " + fileName + " calico.yml"
+	cmd = "cd " + c.DownloadDir + " && /usr/bin/cp -f  " + fileName + " calico-private.yml"
 	utils.Cmd("bash", "-c", cmd)
 
-	cmd = "cd " + c.DownloadDir + ` &&sed -i 's@# - name: CALICO_IPV4POOL_CIDR@- name: CALICO_IPV4POOL_CIDR@g' calico.yml`
+	cmd = "cd " + c.DownloadDir + ` &&sed -i 's@# - name: CALICO_IPV4POOL_CIDR@- name: CALICO_IPV4POOL_CIDR@g' calico-private.yml`
 	utils.Cmd("bash", "-c", cmd)
-	cmd = "cd " + c.DownloadDir + ` &&sed -i 's@#   value: "192.168.0.0/16"@  value: "` + c.PodCIDR + `"@g' calico.yml`
+	cmd = "cd " + c.DownloadDir + ` &&sed -i 's@#   value: "192.168.0.0/16"@  value: "` + c.PodCIDR + `"@g' calico-private.yml`
 	utils.Cmd("bash", "-c", cmd)
-	cmd = "cd " + c.DownloadDir + " && ./kubectl apply -f calico.yml"
+
+	cmd = "cd " + c.DownloadDir + ` &&sed -i 's@docker.io@quay.io@g' calico-private.yml`
+	utils.Cmd("bash", "-c", cmd)
+
+	cmd = "cd " + c.DownloadDir + " && ./kubectl apply -f calico-private.yml"
 	utils.Cmd("bash", "-c", cmd)
 }
