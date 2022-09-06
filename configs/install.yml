@@ -41,7 +41,7 @@ k8s:
       dns: 172.16.0.10
     - name: calico
       podCIDR: 10.100.0.0/16
-      calicoUrl: https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/calico.yaml
+      calicoUrl: https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/calico-typha.yaml
   CIDR:
     serviceCIDR: 172.16.0.0/16
   certificate: 876000h
