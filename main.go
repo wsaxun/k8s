@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"github.com/gobuffalo/packr"
 	"k8s/pkg"
 	"k8s/pkg/utils"
 	"log"
@@ -12,8 +14,21 @@ import (
 
 func main() {
 	log.Println("k8s start install")
+	// parser cmd option
+	cmdOption := utils.CmdArgs()
+	if cmdOption.PrintDefault {
+		box := packr.NewBox("../../../configs")
+		context, _ := box.FindString("install.yml")
+		fmt.Println(context)
+		os.Exit(0)
+	}
+
+	if !utils.PathIsExist(cmdOption.ConfigFile) {
+		log.Fatalln(cmdOption.ConfigFile + "is not exist")
+	}
+
 	// parser install yml
-	config := utils.ParserYml("./configs/install.yml")
+	config := utils.ParserYml(cmdOption.ConfigFile)
 	softwareDownloadDir := config.Packages.DownloadDir
 	urls := config.Packages.Url
 	utils.AnsibleCache = filepath.Join(softwareDownloadDir, "ansibleCache")
@@ -29,12 +44,83 @@ func main() {
 		}
 	}
 
+	//
+	yumRepo := config.Docker.YumRepo
+	dataRoot := config.Docker.DataRoot
+	mirror := config.Docker.RegistryMirrors
+	docker := pkg.Docker{
+		YumRepo:         yumRepo,
+		DataRoot:        dataRoot,
+		RegistryMirrors: mirror,
+	}
+	var dns string
+	var kubeletDir string
+	for _, v := range config.K8s.Plugin {
+		if v.Name == "coreDns" {
+			dns = v.Dns
+		}
+	}
+	for _, v := range config.K8s.Node.Components {
+		if v.Name == "kubelet" {
+			kubeletDir = v.Dir
+		}
+	}
+	var kubeProxyDir string
+	for _, v := range config.K8s.Node.Components {
+		if v.Name == "kubproxy" {
+			kubeProxyDir = v.Dir
+		}
+	}
+	var contrDir string
+	var podCIDR string
+	for _, v := range config.K8s.Master.Components {
+		if v.Name == "controller-manager" {
+			contrDir = v.Dir
+		}
+	}
+	for _, v := range config.K8s.Plugin {
+		if v.Name == "calico" {
+			podCIDR = v.PodCIDR
+		}
+	}
+
 	//generate ansible inventory
 	log.Println("generate ansible hosts")
 	inventory := pkg.Inventory(config)
 
+	// node 部署
+	if cmdOption.InstallType == "node" {
+		log.Println("generate ansible hosts")
+		inventory := pkg.IncrementInventory(config)
+
+		log.Println("init node computer")
+		pkg.InitNodeEnv("increment", inventory)
+
+		log.Println("install docker")
+		docker.Install("increment", inventory)
+
+		log.Println("install kubelet")
+		kubelet := pkg.Kubelet{
+			CoreDns:     dns,
+			Dir:         kubeletDir,
+			DownloadDir: softwareDownloadDir,
+		}
+		kubelet.Install("increment", inventory)
+
+		// install kube-proxy
+		log.Println("install kube-haproxy")
+		kubeProxy := pkg.Proxy{
+			Vip:         config.Keepalived.Vip,
+			Port:        config.Haproxy.FrontendPort,
+			Dir:         kubeProxyDir,
+			DownloadDir: softwareDownloadDir,
+			PodCIDR:     podCIDR,
+		}
+		kubeProxy.Install("increment", inventory)
+		os.Exit(0)
+	}
+
 	// download
-	// TODO
 	log.Println("download software")
 
 	software := pkg.Software{
@@ -56,7 +142,6 @@ func main() {
 	pkg.KubeConfig(softwareDownloadDir, config.Keepalived.Vip, config.Haproxy.FrontendPort, inventory)
 
 	// init env
-	// TODO
 	log.Println("init master computer")
 	pkg.InitMasterEnv("master", inventory)
 	log.Println("init node computer")
@@ -64,20 +149,10 @@ func main() {
 
 	// install docker
 	log.Println("install docker")
-
-	yumRepo := config.Docker.YumRepo
-	dataRoot := config.Docker.DataRoot
-	mirror := config.Docker.RegistryMirrors
-	docker := pkg.Docker{
-		YumRepo:         yumRepo,
-		DataRoot:        dataRoot,
-		RegistryMirrors: mirror,
-	}
 	docker.Install("master", inventory)
 	docker.Install("node", inventory)
 
 	// install haproxy
-	// TODO
 	log.Println("install haproxy")
 
 	haproxyHost := make(map[string]string)
@@ -91,7 +166,6 @@ func main() {
 	haproxy.Install("haproxy", inventory)
 
 	// install keepalived
-	// TODO
 	log.Println("install keepalived")
 
 	keepalived := pkg.Keepalived{
@@ -102,7 +176,6 @@ func main() {
 	keepalived.Install("keepalived", inventory)
 
 	// install etcd
-	// TODO
 	log.Println("install etcd")
 
 	var dataDir string
@@ -125,7 +198,6 @@ func main() {
 	etcd.Install("etcd", inventory)
 
 	// install apiServer
-	// TODO
 	log.Println("install api-server")
 
 	var apiServerDir string
@@ -146,21 +218,8 @@ func main() {
 	apiserver.Install("api-server", inventory)
 
 	// install controllerManager
-	// TODO
 	log.Println("install controllerManager")
 
-	var contrDir string
-	var podCIDR string
-	for _, v := range config.K8s.Master.Components {
-		if v.Name == "controller-manager" {
-			contrDir = v.Dir
-		}
-	}
-	for _, v := range config.K8s.Plugin {
-		if v.Name == "calico" {
-			podCIDR = v.PodCIDR
-		}
-	}
 	contr := pkg.ControllerManager{
 		Dir:         contrDir,
 		PodCIDR:     podCIDR,
@@ -169,7 +228,6 @@ func main() {
 	contr.Install("controller-manager", inventory)
 
 	// install scheduler
-	// TODO
 	log.Println("install scheduler")
 
 	var schedulerDir string
@@ -185,7 +243,6 @@ func main() {
 	scheduler.Install("scheduler", inventory)
 
 	// install bootstrap
-	// TODO
 	log.Println("config bootstrap")
 
 	bootstrap := pkg.Bootstrap{
@@ -196,21 +253,7 @@ func main() {
 	bootstrap.Install("127.0.0.1", inventory)
 
 	// install kubelet
-	// TODO
 	log.Println("install kubelet")
-
-	var dns string
-	var kubeletDir string
-	for _, v := range config.K8s.Plugin {
-		if v.Name == "coreDns" {
-			dns = v.Dns
-		}
-	}
-	for _, v := range config.K8s.Node.Components {
-		if v.Name == "kubelet" {
-			kubeletDir = v.Dir
-		}
-	}
 	kubelet := pkg.Kubelet{
 		CoreDns:     dns,
 		Dir:         kubeletDir,
@@ -219,15 +262,7 @@ func main() {
 	kubelet.Install("kubernetes", inventory)
 
 	// install kube-proxy
-	// TODO
 	log.Println("install kube-haproxy")
-
-	var kubeProxyDir string
-	for _, v := range config.K8s.Node.Components {
-		if v.Name == "kubproxy" {
-			kubeProxyDir = v.Dir
-		}
-	}
 	kubeProxy := pkg.Proxy{
 		Vip:         config.Keepalived.Vip,
 		Port:        config.Haproxy.FrontendPort,
@@ -238,7 +273,6 @@ func main() {
 	kubeProxy.Install("kubernetes", inventory)
 
 	// install calico
-	// TODO
 	log.Println("install calico")
 
 	var calicoUrl string
@@ -255,7 +289,6 @@ func main() {
 	calico.Install()
 
 	// install coredns
-	// TODO
 	log.Println("install coreDns")
 
 	coredns := pkg.CoreDns{
