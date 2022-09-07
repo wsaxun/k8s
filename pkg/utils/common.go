@@ -75,7 +75,6 @@ func Cmd(name string, args ...string) string {
 		log.Println(name, args, string(out))
 		log.Fatalln(err)
 	}
-	log.Println(name, args, string(out))
 	return string(out)
 }
 

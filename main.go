@@ -13,19 +13,19 @@ import (
 )
 
 func main() {
-	log.Println("k8s start install")
 	// parser cmd option
 	cmdOption := utils.CmdArgs()
 	if cmdOption.PrintDefault {
-		box := packr.NewBox("../../../configs")
+		box := packr.NewBox("./configs")
 		context, _ := box.FindString("install.yml")
 		fmt.Println(context)
 		os.Exit(0)
 	}
 
 	if !utils.PathIsExist(cmdOption.ConfigFile) {
-		log.Fatalln(cmdOption.ConfigFile + "is not exist")
+		log.Fatalln("file is not exist")
 	}
+	log.Println("k8s start install")
 
 	// parser install yml
 	config := utils.ParserYml(cmdOption.ConfigFile)
@@ -90,7 +90,6 @@ func main() {
 
 	// node 部署
 	if cmdOption.InstallType == "node" {
-		log.Println("generate ansible hosts")
 		inventory := pkg.IncrementInventory(config)
 
 		log.Println("init node computer")

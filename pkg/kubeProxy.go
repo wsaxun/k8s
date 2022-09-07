@@ -3,6 +3,7 @@ package pkg
 import (
 	"github.com/gobuffalo/packr"
 	"k8s/pkg/utils"
+	"path/filepath"
 	"time"
 )
 
@@ -44,6 +45,9 @@ func (p *Proxy) config(inventory string) {
 }
 
 func (p *Proxy) kubeConfig(inventory string) {
+	if utils.PathIsExist(filepath.Join(utils.GetCache(), "kubeProxyKubeConfig.yml")) {
+		return
+	}
 	cmd := p.DownloadDir + "/kubectl " + "-n kube-system create serviceaccount kube-proxy"
 	utils.Cmd("bash", "-c", cmd)
 	cmd = p.DownloadDir + "/kubectl create clusterrolebinding system:kube-proxy --clusterrole system:node-proxier --serviceaccount kube-system:kube-proxy"

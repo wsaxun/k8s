@@ -6,7 +6,10 @@
     - name:  add yum-repo
       shell: yum-config-manager --add-repo {{.YumRepo}} && yum makecache fast
     - name: install docker
-      yum: name=docker-ce state=latest
+      yum:
+        name:
+          - docker-ce
+        state: present
     - name: mkdir /etc/docker
       file:
         path: /etc/docker

@@ -101,7 +101,7 @@ func unrepeatedArray(slc []string) []string {
 }
 
 func getExistNode(downloadDir string) []string {
-	cmd := filepath.Join(downloadDir, "kubelet") + ` get node -o wide|grep -oE "[ ]{1,}([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})[ ]{1,}"`
+	cmd := filepath.Join(downloadDir, "kubectl") + ` get node -o wide|grep -oE "[ ]{1,}([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})[ ]{1,}"`
 	cmdResult := utils.Cmd("bash", "-c", cmd)
 	r, _ := regexp.Compile(`[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}`)
 	ipArray := r.FindAllString(cmdResult, -1)
