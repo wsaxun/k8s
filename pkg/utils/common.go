@@ -86,7 +86,7 @@ func FileName(url string) string {
 }
 
 type CmdOption struct {
-	PrintDefault bool   `short:"p" long:"PrintDefault" description:"print install default config" default:"true"`
+	PrintDefault bool   `short:"p" long:"PrintDefault" description:"print install default config"`
 	InstallType  string `short:"i" long:"install" description:"k8s or node"`
 	ConfigFile   string `short:"f" long:"file" description:"install config file"`
 }
