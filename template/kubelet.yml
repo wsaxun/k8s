@@ -59,8 +59,17 @@
       ignore_errors: yes
     - name: systemctl daeme-reload
       shell: systemctl daemon-reload
+    - name: stop kubelet
+      service:
+        name: kubelet
+        state: stoped
+      ignore_errors: yes
+    - name: rm /var/lib/kubelet
+        path: /var/lib/kubelet
+        state: absent
+      ignore_errors: yes
     - name: start kubelet
       service:
         name: kubelet
-        state: restarted
+        state: started
         enabled: yes
