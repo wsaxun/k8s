@@ -3,6 +3,7 @@ package main
 import (
 	"embed"
 	"fmt"
+	"github.com/jessevdk/go-flags"
 	"k8s/pkg"
 	"k8s/pkg/utils"
 	"log"
@@ -20,7 +21,9 @@ var TEMPLATE embed.FS
 
 func main() {
 	// parser cmd option
-	cmdOption := utils.CmdArgs()
+	var cmdOption utils.CmdOption
+	flags.Parse(&cmdOption)
+
 	if cmdOption.PrintDefault {
 		context, _ := CONFIGS.ReadFile("configs/install.yml")
 		fmt.Println(string(context))

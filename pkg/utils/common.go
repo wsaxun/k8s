@@ -3,7 +3,6 @@ package utils
 import (
 	"crypto/md5"
 	"fmt"
-	"github.com/jessevdk/go-flags"
 	uuid "github.com/satori/go.uuid"
 	"log"
 	"os"
@@ -89,12 +88,6 @@ type CmdOption struct {
 	PrintDefault bool   `short:"p" long:"PrintDefault" description:"print install default config"`
 	InstallType  string `short:"i" long:"install" description:"k8s or node"`
 	ConfigFile   string `short:"f" long:"file" description:"install config file"`
-}
-
-func CmdArgs() CmdOption {
-	var opt CmdOption
-	flags.Parse(&opt)
-	return opt
 }
 
 func PathIsExist(path string) bool {
