@@ -125,6 +125,8 @@ func main() {
 		}
 		kubeProxy.Install("increment", inventory, TEMPLATE)
 		os.Exit(0)
+	} else if cmdOption.InstallType != "k8s" {
+		log.Fatal("cmd option error")
 	}
 
 	// download
