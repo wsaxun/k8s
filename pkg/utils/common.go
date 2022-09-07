@@ -93,11 +93,7 @@ type CmdOption struct {
 
 func CmdArgs() CmdOption {
 	var opt CmdOption
-	_, err := flags.Parse(&opt)
-	if err != nil {
-		log.Fatal("Parse error:", err)
-	}
-
+	flags.Parse(&opt)
 	return opt
 }
 
