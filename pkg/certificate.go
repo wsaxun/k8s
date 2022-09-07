@@ -1,7 +1,7 @@
 package pkg
 
 import (
-	"github.com/gobuffalo/packr"
+	"embed"
 	"k8s/pkg/utils"
 	"log"
 	"os"
@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func ConfigCsr(cache string, duration string) {
+func ConfigCsr(cache string, duration string, fs embed.FS) {
 	pkiPath := filepath.Join(cache, "/kubernetes/csr/")
 	_, err := os.Stat(pkiPath)
 	if err != nil {
@@ -25,15 +25,13 @@ func ConfigCsr(cache string, duration string) {
 		Duration string
 	}
 	Info.Duration = duration
-	box := packr.NewBox("../template/csr")
-
 	var files = []string{"admin-csr.json", "apiserver-csr.json", "ca-config.json", "ca-csr.json", "etcd-ca-csr.json",
 		"etcd-csr.json", "front-proxy-ca-csr.json", "front-proxy-client-csr.json", "kube-proxy-csr.json",
 		"manager-csr.json", "scheduler-csr.json"}
 
 	for _, v := range files {
-		context, _ := box.FindString(v)
-		path := utils.Render(Info, context, v)
+		context, _ := fs.ReadFile(filepath.Join("template/csr", v))
+		path := utils.Render(Info, string(context), v)
 		err := os.Rename(path, filepath.Join(pkiPath, v))
 		if err != nil {
 			log.Fatalln(err)
@@ -42,17 +40,16 @@ func ConfigCsr(cache string, duration string) {
 	}
 }
 
-func Cert(downloadCache string, etcdhost, allHost string, inventory string) {
+func Cert(downloadCache string, etcdhost, allHost string, inventory string, fs embed.FS) {
 	fileName := "generateCert.yml"
-	box := packr.NewBox("../template")
-	certYml, _ := box.FindString(fileName)
+	certYml, _ := fs.ReadFile("template/generateCert.yml")
 	type info struct {
 		DownloadDir string
 		Allhost     string
 		Etcdhost    string
 	}
 	content := info{DownloadDir: downloadCache, Allhost: allHost, Etcdhost: etcdhost}
-	path := utils.Render(content, certYml, fileName)
+	path := utils.Render(content, string(certYml), fileName)
 	utils.Playbook(path, inventory)
 }
 

@@ -1,7 +1,7 @@
 package pkg
 
 import (
-	"github.com/gobuffalo/packr"
+	"embed"
 	"k8s/pkg/utils"
 )
 
@@ -12,11 +12,10 @@ type ControllerManager struct {
 	DownloadDir string
 }
 
-func (c *ControllerManager) Install(host string, inventory string) {
-	c.config()
+func (c *ControllerManager) Install(host string, inventory string, fs embed.FS) {
+	c.config(fs)
 	ymlName := "controllerManager.yml"
-	box := packr.NewBox("../template")
-	yml, _ := box.FindString(ymlName)
+	yml, _ := fs.ReadFile("template/controllerManager.yml")
 
 	type info struct {
 		Dir         string
@@ -28,12 +27,11 @@ func (c *ControllerManager) Install(host string, inventory string) {
 		Host:        host,
 		DownloadDir: c.DownloadDir,
 	}
-	path := utils.Render(serviceInfo, yml, ymlName)
+	path := utils.Render(serviceInfo, string(yml), ymlName)
 	utils.Playbook(path, inventory)
 }
 
-func (c *ControllerManager) config() {
-	box := packr.NewBox("../template")
-	context, _ := box.FindString("softwareConfig/kube-controller-manager.service")
-	utils.Render(c, context, "kube-controller-manager.service")
+func (c *ControllerManager) config(fs embed.FS) {
+	context, _ := fs.ReadFile("template/softwareConfig/kube-controller-manager.service")
+	utils.Render(c, string(context), "kube-controller-manager.service")
 }

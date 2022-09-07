@@ -1,7 +1,7 @@
 package pkg
 
 import (
-	"github.com/gobuffalo/packr"
+	"embed"
 	"k8s/pkg/utils"
 )
 
@@ -12,18 +12,17 @@ type Docker struct {
 	RegistryMirrors string
 }
 
-func (d *Docker) Install(host string, inventory string) {
+func (d *Docker) Install(host string, inventory string, fs embed.FS) {
 	ymlName := "installDocker.yml"
-	box := packr.NewBox("../template")
-	daemonContext, _ := box.FindString("softwareConfig/daemon.json")
-	utils.Render(d, daemonContext, "daemon.json")
+	daemonContext, _ := fs.ReadFile("template/softwareConfig/daemon.json")
+	utils.Render(d, string(daemonContext), "daemon.json")
 
-	dockerYml, _ := box.FindString(ymlName)
+	dockerYml, _ := fs.ReadFile("template/" + ymlName)
 	type info struct {
 		Host    string
 		YumRepo string
 	}
 	content := info{Host: host, YumRepo: d.YumRepo}
-	path := utils.Render(content, dockerYml, ymlName)
+	path := utils.Render(content, string(dockerYml), ymlName)
 	utils.Playbook(path, inventory)
 }

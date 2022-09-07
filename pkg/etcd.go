@@ -1,8 +1,8 @@
 package pkg
 
 import (
+	"embed"
 	"fmt"
-	"github.com/gobuffalo/packr"
 	"k8s/pkg/utils"
 	"strconv"
 )
@@ -17,15 +17,14 @@ type Etcd struct {
 	Record      map[string]string
 }
 
-func (e *Etcd) Install(host string, inventory string) {
-	e.config()
+func (e *Etcd) Install(host string, inventory string, fs embed.FS) {
+	e.config(fs)
 
 	//add hosts
-	e.addEtcdHosts(host, inventory)
+	e.addEtcdHosts(host, inventory, fs)
 
 	ymlName := "etcd.yml"
-	box := packr.NewBox("../template")
-	yml, _ := box.FindString(ymlName)
+	yml, _ := fs.ReadFile("template/etcd.yml")
 	type info struct {
 		Host        string
 		AllHost     []string
@@ -42,13 +41,12 @@ func (e *Etcd) Install(host string, inventory string) {
 		EtcdName:    e.EtcdName,
 		DataDir:     e.DataDir,
 	}
-	path := utils.Render(content, yml, ymlName)
+	path := utils.Render(content, string(yml), ymlName)
 	utils.Playbook(path, inventory)
 }
 
-func (e *Etcd) config() {
-	box := packr.NewBox("../template")
-	context, _ := box.FindString("softwareConfig/etcd.config.yml")
+func (e *Etcd) config(fs embed.FS) {
+	context, _ := fs.ReadFile("template/softwareConfig/etcd.config.yml")
 	type data struct {
 		Name      string
 		DataDir   string
@@ -78,21 +76,20 @@ func (e *Etcd) config() {
 	for index, host := range e.Host {
 		tplData.Name = "etcd" + strconv.Itoa(index)
 		tplData.LocalHost = host
-		utils.Render(tplData, context, "etcd.config.yml_"+host)
+		utils.Render(tplData, string(context), "etcd.config.yml_"+host)
 	}
 
-	service, _ := box.FindString("softwareConfig/etcd.service")
+	service, _ := fs.ReadFile("template/softwareConfig/etcd.service")
 	type info struct {
 		Dir string
 	}
 	serviceInfo := info{Dir: e.Dir}
-	utils.Render(serviceInfo, service, "etcd.service")
+	utils.Render(serviceInfo, string(service), "etcd.service")
 }
 
-func (e *Etcd) addEtcdHosts(host, inventory string) {
+func (e *Etcd) addEtcdHosts(host, inventory string, fs embed.FS) {
 	ymlName := "addEtcdHosts.yml"
-	box := packr.NewBox("../template")
-	yml, _ := box.FindString(ymlName)
+	yml, _ := fs.ReadFile("template/" + ymlName)
 	type info struct {
 		Host   string
 		Record map[string]string
@@ -101,6 +98,6 @@ func (e *Etcd) addEtcdHosts(host, inventory string) {
 		Host:   host,
 		Record: e.Record,
 	}
-	path := utils.Render(content, yml, ymlName)
+	path := utils.Render(content, string(yml), ymlName)
 	utils.Playbook(path, inventory)
 }

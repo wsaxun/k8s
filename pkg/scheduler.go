@@ -1,7 +1,7 @@
 package pkg
 
 import (
-	"github.com/gobuffalo/packr"
+	"embed"
 	"k8s/pkg/utils"
 )
 
@@ -11,11 +11,10 @@ type Scheduler struct {
 	DownloadDir string
 }
 
-func (s *Scheduler) Install(host string, inventory string) {
-	s.config()
+func (s *Scheduler) Install(host string, inventory string, fs embed.FS) {
+	s.config(fs)
 	ymlName := "scheduler.yml"
-	box := packr.NewBox("../template")
-	yml, _ := box.FindString(ymlName)
+	yml, _ := fs.ReadFile("template/" + ymlName)
 
 	type info struct {
 		Dir         string
@@ -27,12 +26,11 @@ func (s *Scheduler) Install(host string, inventory string) {
 		Host:        host,
 		DownloadDir: s.DownloadDir,
 	}
-	path := utils.Render(serviceInfo, yml, ymlName)
+	path := utils.Render(serviceInfo, string(yml), ymlName)
 	utils.Playbook(path, inventory)
 }
 
-func (s *Scheduler) config() {
-	box := packr.NewBox("../template")
-	context, _ := box.FindString("softwareConfig/kube-scheduler.service")
-	utils.Render(s, context, "kube-scheduler.service")
+func (s *Scheduler) config(fs embed.FS) {
+	context, _ := fs.ReadFile("template/softwareConfig/kube-scheduler.service")
+	utils.Render(s, string(context), "kube-scheduler.service")
 }

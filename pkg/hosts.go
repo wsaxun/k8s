@@ -1,13 +1,13 @@
 package pkg
 
 import (
-	"github.com/gobuffalo/packr"
+	"embed"
 	"k8s/pkg/utils"
 	"path/filepath"
 	"regexp"
 )
 
-func Inventory(config utils.Config) string {
+func Inventory(config utils.Config, fs embed.FS) string {
 	type info struct {
 		Kubernetes            []string
 		Master                []string
@@ -64,13 +64,12 @@ func Inventory(config utils.Config) string {
 		KeepalivedHost:        keepalivedHost,
 	}
 
-	box := packr.NewBox("../template")
-	hosts, _ := box.FindString("ansibleHosts/hosts")
-	path := utils.Render(hostInfo, hosts, "hosts")
+	hosts, _ := fs.ReadFile("template/ansibleHosts/hosts")
+	path := utils.Render(hostInfo, string(hosts), "hosts")
 	return path
 }
 
-func IncrementInventory(config utils.Config) string {
+func IncrementInventory(config utils.Config, fs embed.FS) string {
 	type info struct {
 		IncrementHost []string
 	}
@@ -81,9 +80,8 @@ func IncrementInventory(config utils.Config) string {
 		IncrementHost: incrementHost,
 	}
 
-	box := packr.NewBox("../template")
-	hosts, _ := box.FindString("ansibleHosts/incrementHosts")
-	path := utils.Render(hostInfo, hosts, "incrementHosts")
+	hosts, _ := fs.ReadFile("template/ansibleHosts/incrementHosts")
+	path := utils.Render(hostInfo, string(hosts), "incrementHosts")
 	return path
 }
 

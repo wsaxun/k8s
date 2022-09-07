@@ -1,7 +1,7 @@
 package pkg
 
 import (
-	"github.com/gobuffalo/packr"
+	"embed"
 	"k8s/pkg/utils"
 	"path/filepath"
 	"time"
@@ -16,11 +16,10 @@ type Proxy struct {
 	PodCIDR     string
 }
 
-func (p *Proxy) Install(host string, inventory string) {
-	p.config(inventory)
+func (p *Proxy) Install(host string, inventory string, fs embed.FS) {
+	p.config(inventory, fs)
 	ymlName := "kubeProxy.yml"
-	box := packr.NewBox("../template")
-	yml, _ := box.FindString(ymlName)
+	yml, _ := fs.ReadFile("template/" + ymlName)
 	type info struct {
 		Dir         string
 		DownloadDir string
@@ -31,20 +30,19 @@ func (p *Proxy) Install(host string, inventory string) {
 		DownloadDir: p.DownloadDir,
 		Host:        host,
 	}
-	path := utils.Render(kubeProxyInfo, yml, ymlName)
+	path := utils.Render(kubeProxyInfo, string(yml), ymlName)
 	utils.Playbook(path, inventory)
 }
 
-func (p *Proxy) config(inventory string) {
-	p.kubeConfig(inventory)
-	box := packr.NewBox("../template")
-	context, _ := box.FindString("softwareConfig/kube-proxy.service")
-	utils.Render(p, context, "kube-proxy.service")
-	service, _ := box.FindString("softwareConfig/kube-proxy.config.yml")
-	utils.Render(p, service, "kube-proxy.config.yml")
+func (p *Proxy) config(inventory string, fs embed.FS) {
+	p.kubeConfig(inventory, fs)
+	context, _ := fs.ReadFile("template/softwareConfig/kube-proxy.service")
+	utils.Render(p, string(context), "kube-proxy.service")
+	service, _ := fs.ReadFile("template/softwareConfig/kube-proxy.config.yml")
+	utils.Render(p, string(service), "kube-proxy.config.yml")
 }
 
-func (p *Proxy) kubeConfig(inventory string) {
+func (p *Proxy) kubeConfig(inventory string, fs embed.FS) {
 	if utils.PathIsExist(filepath.Join(utils.GetCache(), "kubeProxyKubeConfig.yml")) {
 		return
 	}
@@ -69,8 +67,7 @@ func (p *Proxy) kubeConfig(inventory string) {
 		Port:        p.Port,
 		Token:       token,
 	}
-	box := packr.NewBox("../template")
-	context, _ := box.FindString("kubeProxyKubeConfig.yml")
-	path := utils.Render(proxyInfo, context, "kubeProxyKubeConfig.yml")
+	context, _ := fs.ReadFile("template/kubeProxyKubeConfig.yml")
+	path := utils.Render(proxyInfo, string(context), "kubeProxyKubeConfig.yml")
 	utils.Playbook(path, inventory)
 }

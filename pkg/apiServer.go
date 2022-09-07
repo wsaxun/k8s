@@ -1,7 +1,7 @@
 package pkg
 
 import (
-	"github.com/gobuffalo/packr"
+	"embed"
 	"k8s/pkg/utils"
 )
 
@@ -14,11 +14,10 @@ type ApiServer struct {
 	EtcdHost    []string
 }
 
-func (a *ApiServer) Install(host string, inventory string) {
-	a.config()
+func (a *ApiServer) Install(host string, inventory string, fs embed.FS) {
+	a.config(fs)
 	ymlName := "apiServer.yml"
-	box := packr.NewBox("../template")
-	yml, _ := box.FindString(ymlName)
+	yml, _ := fs.ReadFile("template/apiServer.yml")
 
 	type info struct {
 		Dir         string
@@ -32,13 +31,12 @@ func (a *ApiServer) Install(host string, inventory string) {
 		DownloadDir: a.DownloadDir,
 		AllHost:     a.Host,
 	}
-	path := utils.Render(serviceInfo, yml, ymlName)
+	path := utils.Render(serviceInfo, string(yml), ymlName)
 	utils.Playbook(path, inventory)
 }
 
-func (a *ApiServer) config() {
-	box := packr.NewBox("../template")
-	context, _ := box.FindString("softwareConfig/kube-apiserver.service")
+func (a *ApiServer) config(fs embed.FS) {
+	context, _ := fs.ReadFile("template/softwareConfig/kube-apiserver.service")
 	type data struct {
 		Dir         string
 		LocalHost   string
@@ -63,6 +61,6 @@ func (a *ApiServer) config() {
 	}
 	for _, host := range a.Host {
 		tplData.LocalHost = host
-		utils.Render(tplData, context, "kube-apiserver.service_"+host)
+		utils.Render(tplData, string(context), "kube-apiserver.service_"+host)
 	}
 }

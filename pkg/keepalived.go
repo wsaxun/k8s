@@ -1,7 +1,7 @@
 package pkg
 
 import (
-	"github.com/gobuffalo/packr"
+	"embed"
 	"k8s/pkg/utils"
 )
 
@@ -12,11 +12,10 @@ type Keepalived struct {
 	Vip       string
 }
 
-func (k *Keepalived) Install(host string, inventory string) {
-	k.config()
+func (k *Keepalived) Install(host string, inventory string, fs embed.FS) {
+	k.config(fs)
 	ymlName := "keepalived.yml"
-	box := packr.NewBox("../template")
-	yml, _ := box.FindString(ymlName)
+	yml, _ := fs.ReadFile("template/" + ymlName)
 	type info struct {
 		Host    string
 		AllHost []string
@@ -25,13 +24,12 @@ func (k *Keepalived) Install(host string, inventory string) {
 		Host:    host,
 		AllHost: k.Host,
 	}
-	path := utils.Render(content, yml, ymlName)
+	path := utils.Render(content, string(yml), ymlName)
 	utils.Playbook(path, inventory)
 }
 
-func (k *Keepalived) config() {
-	box := packr.NewBox("../template")
-	context, _ := box.FindString("softwareConfig/keepalived.conf")
+func (k *Keepalived) config(fs embed.FS) {
+	context, _ := fs.ReadFile("template/softwareConfig/keepalived.conf")
 	type data struct {
 		Weight    int
 		Level     int
@@ -52,7 +50,7 @@ func (k *Keepalived) config() {
 	for _, host := range k.Host {
 		tplData.Level += 1
 		tplData.LocalHost = host
-		utils.Render(tplData, context, "keepalived.conf_"+host)
+		utils.Render(tplData, string(context), "keepalived.conf_"+host)
 	}
 
 }

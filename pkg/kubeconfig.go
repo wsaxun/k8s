@@ -1,20 +1,19 @@
 package pkg
 
 import (
-	"github.com/gobuffalo/packr"
+	"embed"
 	"k8s/pkg/utils"
 )
 
-func KubeConfig(downloadCache string, vip string, port int, inventory string) {
+func KubeConfig(downloadCache string, vip string, port int, inventory string, fs embed.FS) {
 	fileName := "kubeconfig.yml"
-	box := packr.NewBox("../template")
-	kubeYml, _ := box.FindString(fileName)
+	kubeYml, _ := fs.ReadFile("template/" + fileName)
 	type info struct {
 		DownloadDir string
 		VIP         string
 		Port        int
 	}
 	content := info{DownloadDir: downloadCache, VIP: vip, Port: port}
-	path := utils.Render(content, kubeYml, fileName)
+	path := utils.Render(content, string(kubeYml), fileName)
 	utils.Playbook(path, inventory)
 }

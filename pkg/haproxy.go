@@ -1,7 +1,7 @@
 package pkg
 
 import (
-	"github.com/gobuffalo/packr"
+	"embed"
 	"k8s/pkg/utils"
 )
 
@@ -11,17 +11,16 @@ type Haproxy struct {
 	HostInfo map[string]string
 }
 
-func (h *Haproxy) Install(host string, inventory string) {
+func (h *Haproxy) Install(host string, inventory string, fs embed.FS) {
 	ymlName := "haproxy.yml"
-	box := packr.NewBox("../template")
-	context, _ := box.FindString("softwareConfig/haproxy.cfg")
-	utils.Render(h, context, "haproxy.cfg")
+	context, _ := fs.ReadFile("template/softwareConfig/haproxy.cfg")
+	utils.Render(h, string(context), "haproxy.cfg")
 
-	yml, _ := box.FindString(ymlName)
+	yml, _ := fs.ReadFile("template/" + ymlName)
 	type info struct {
 		Host string
 	}
 	content := info{Host: host}
-	path := utils.Render(content, yml, ymlName)
+	path := utils.Render(content, string(yml), ymlName)
 	utils.Playbook(path, inventory)
 }

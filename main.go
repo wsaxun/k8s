@@ -1,8 +1,8 @@
 package main
 
 import (
+	"embed"
 	"fmt"
-	"github.com/gobuffalo/packr"
 	"k8s/pkg"
 	"k8s/pkg/utils"
 	"log"
@@ -12,13 +12,18 @@ import (
 	"strings"
 )
 
+//go:embed configs
+var CONFIGS embed.FS
+
+//go:embed template
+var TEMPLATE embed.FS
+
 func main() {
 	// parser cmd option
 	cmdOption := utils.CmdArgs()
 	if cmdOption.PrintDefault {
-		box := packr.NewBox("./configs")
-		context, _ := box.FindString("install.yml")
-		fmt.Println(context)
+		context, _ := CONFIGS.ReadFile("configs/install.yml")
+		fmt.Println(string(context))
 		os.Exit(0)
 	}
 
@@ -86,17 +91,17 @@ func main() {
 
 	//generate ansible inventory
 	log.Println("generate ansible hosts")
-	inventory := pkg.Inventory(config)
+	inventory := pkg.Inventory(config, TEMPLATE)
 
 	// node 部署
 	if cmdOption.InstallType == "node" {
-		inventory := pkg.IncrementInventory(config)
+		inventory := pkg.IncrementInventory(config, TEMPLATE)
 
 		log.Println("init node computer")
-		pkg.InitNodeEnv("increment", inventory)
+		pkg.InitNodeEnv("increment", inventory, TEMPLATE)
 
 		log.Println("install docker")
-		docker.Install("increment", inventory)
+		docker.Install("increment", inventory, TEMPLATE)
 
 		log.Println("install kubelet")
 		kubelet := pkg.Kubelet{
@@ -104,7 +109,7 @@ func main() {
 			Dir:         kubeletDir,
 			DownloadDir: softwareDownloadDir,
 		}
-		kubelet.Install("increment", inventory)
+		kubelet.Install("increment", inventory, TEMPLATE)
 
 		// install kube-proxy
 		log.Println("install kube-haproxy")
@@ -115,7 +120,7 @@ func main() {
 			DownloadDir: softwareDownloadDir,
 			PodCIDR:     podCIDR,
 		}
-		kubeProxy.Install("increment", inventory)
+		kubeProxy.Install("increment", inventory, TEMPLATE)
 		os.Exit(0)
 	}
 
@@ -126,30 +131,30 @@ func main() {
 		DownloadPackage: softwareDownloadDir,
 		URL:             urls,
 	}
-	software.DownloadPackages(inventory)
+	software.DownloadPackages(inventory, TEMPLATE)
 
 	// generate cert
 	log.Println("generate cert")
 
-	pkg.ConfigCsr(softwareDownloadDir, config.K8s.Certificate)
+	pkg.ConfigCsr(softwareDownloadDir, config.K8s.Certificate, TEMPLATE)
 	allHost := pkg.ApiServerCertHost(config)
 	etcdHost := pkg.EtcdHost(config)
-	pkg.Cert(softwareDownloadDir, etcdHost, allHost, inventory)
+	pkg.Cert(softwareDownloadDir, etcdHost, allHost, inventory, TEMPLATE)
 
 	// generate kubeconfig
 	log.Println("generate kubconfig")
-	pkg.KubeConfig(softwareDownloadDir, config.Keepalived.Vip, config.Haproxy.FrontendPort, inventory)
+	pkg.KubeConfig(softwareDownloadDir, config.Keepalived.Vip, config.Haproxy.FrontendPort, inventory, TEMPLATE)
 
 	// init env
 	log.Println("init master computer")
-	pkg.InitMasterEnv("master", inventory)
+	pkg.InitMasterEnv("master", inventory, TEMPLATE)
 	log.Println("init node computer")
-	pkg.InitNodeEnv("node", inventory)
+	pkg.InitNodeEnv("node", inventory, TEMPLATE)
 
 	// install docker
 	log.Println("install docker")
-	docker.Install("master", inventory)
-	docker.Install("node", inventory)
+	docker.Install("master", inventory, TEMPLATE)
+	docker.Install("node", inventory, TEMPLATE)
 
 	// install haproxy
 	log.Println("install haproxy")
@@ -162,7 +167,7 @@ func main() {
 		Port:     config.Haproxy.FrontendPort,
 		HostInfo: haproxyHost,
 	}
-	haproxy.Install("haproxy", inventory)
+	haproxy.Install("haproxy", inventory, TEMPLATE)
 
 	// install keepalived
 	log.Println("install keepalived")
@@ -172,7 +177,7 @@ func main() {
 		Host:      config.Keepalived.Hosts,
 		Vip:       config.Keepalived.Vip,
 	}
-	keepalived.Install("keepalived", inventory)
+	keepalived.Install("keepalived", inventory, TEMPLATE)
 
 	// install etcd
 	log.Println("install etcd")
@@ -194,7 +199,7 @@ func main() {
 		DownloadDir: config.Packages.DownloadDir,
 		EtcdName:    etcdName,
 	}
-	etcd.Install("etcd", inventory)
+	etcd.Install("etcd", inventory, TEMPLATE)
 
 	// install apiServer
 	log.Println("install api-server")
@@ -214,7 +219,7 @@ func main() {
 		ServiceCIDR: config.K8s.CIDR.ServiceCIDR,
 		EtcdHost:    etcdHostArray,
 	}
-	apiserver.Install("api-server", inventory)
+	apiserver.Install("api-server", inventory, TEMPLATE)
 
 	// install controllerManager
 	log.Println("install controllerManager")
@@ -224,7 +229,7 @@ func main() {
 		PodCIDR:     podCIDR,
 		DownloadDir: config.Packages.DownloadDir,
 	}
-	contr.Install("controller-manager", inventory)
+	contr.Install("controller-manager", inventory, TEMPLATE)
 
 	// install scheduler
 	log.Println("install scheduler")
@@ -239,7 +244,7 @@ func main() {
 		Dir:         schedulerDir,
 		DownloadDir: config.Packages.DownloadDir,
 	}
-	scheduler.Install("scheduler", inventory)
+	scheduler.Install("scheduler", inventory, TEMPLATE)
 
 	// install bootstrap
 	log.Println("config bootstrap")
@@ -249,7 +254,7 @@ func main() {
 		Vip:         config.Keepalived.Vip,
 		Port:        config.Haproxy.FrontendPort,
 	}
-	bootstrap.Install("127.0.0.1", inventory)
+	bootstrap.Install("127.0.0.1", inventory, TEMPLATE)
 
 	// install kubelet
 	log.Println("install kubelet")
@@ -258,7 +263,7 @@ func main() {
 		Dir:         kubeletDir,
 		DownloadDir: softwareDownloadDir,
 	}
-	kubelet.Install("kubernetes", inventory)
+	kubelet.Install("kubernetes", inventory, TEMPLATE)
 
 	// install kube-proxy
 	log.Println("install kube-haproxy")
@@ -269,7 +274,7 @@ func main() {
 		DownloadDir: softwareDownloadDir,
 		PodCIDR:     podCIDR,
 	}
-	kubeProxy.Install("kubernetes", inventory)
+	kubeProxy.Install("kubernetes", inventory, TEMPLATE)
 
 	// install calico
 	log.Println("install calico")
@@ -294,5 +299,5 @@ func main() {
 		Dns:         dns,
 		DownloadDir: softwareDownloadDir,
 	}
-	coredns.Install()
+	coredns.Install(TEMPLATE)
 }
