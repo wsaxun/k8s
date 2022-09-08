@@ -163,12 +163,11 @@ func main() {
 	if len(podInfraCtrImage) > 0 {
 		// install docker
 		log.Println("install docker")
-		docker.Install("master", inventory, TEMPLATE)
-		docker.Install("node", inventory, TEMPLATE)
+		docker.Install("k8s", inventory, TEMPLATE)
 	} else {
 		// install containerd
 		log.Println("install containerd")
-		containerd.Install("increment", inventory, TEMPLATE)
+		containerd.Install("k8s", inventory, TEMPLATE)
 	}
 
 	// install haproxy
