@@ -45,15 +45,58 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	// 根据podInfraCtrImage字符串长度判断cri使用docker还是containerd的条件
+	var dns string
+	var kubeletDir string
+	var podCIDR string
+	var kubeProxyDir string
+	var contrDir string
+	var apiServerDir string
+	var apiServerHostArray []string
+	var dataDir string
+	var dir string
+	var etcdHostArray []string
+	var schedulerDir string
 	var etcdName string
+
+	podInfraCtrImage := config.CRI.Docker.PodInfraCtrImage
+
 	for _, v := range urls {
 		if strings.Index(v, "etcd") >= 1 {
 			etcdName = utils.FileName(v)
 		}
 	}
 
-	// 根据podInfraCtrImage字符串长度判断cri使用docker还是containerd的条件
-	podInfraCtrImage := config.CRI.Docker.PodInfraCtrImage
+	for _, v := range config.K8s.Plugin {
+		if v.Name == "coreDns" {
+			dns = v.Dns
+		} else if v.Name == "calico" {
+			podCIDR = v.PodCIDR
+		}
+	}
+
+	for _, v := range config.K8s.Node.Components {
+		if v.Name == "kubelet" {
+			kubeletDir = v.Dir
+		} else if v.Name == "kubproxy" {
+			kubeProxyDir = v.Dir
+		}
+	}
+
+	for _, v := range config.K8s.Master.Components {
+		if v.Name == "api-server" {
+			apiServerDir = v.Dir
+			apiServerHostArray = v.Hosts
+		} else if v.Name == "controller-manager" {
+			contrDir = v.Dir
+		} else if v.Name == "etcd" {
+			dataDir = v.DataDir
+			dir = v.Dir
+			etcdHostArray = v.Hosts
+		} else if v.Name == "scheduler" {
+			schedulerDir = v.Dir
+		}
+	}
 
 	docker := pkg.Docker{
 		YumRepo:         config.CRI.Docker.YumRepo,
@@ -66,28 +109,6 @@ func main() {
 		DataRoot:        config.CRI.Containerd.DataRoot,
 		RegistryMirrors: config.CRI.Containerd.RegistryMirrors,
 		SandboxImage:    config.CRI.Containerd.SandboxImage,
-	}
-
-	var dns string
-	var kubeletDir string
-	var podCIDR string
-	var kubeProxyDir string
-	var contrDir string
-	for _, v := range config.K8s.Plugin {
-		if v.Name == "coreDns" {
-			dns = v.Dns
-		} else if v.Name == "calico" {
-			podCIDR = v.PodCIDR
-		}
-	}
-	for _, v := range config.K8s.Node.Components {
-		if v.Name == "kubelet" {
-			kubeletDir = v.Dir
-		} else if v.Name == "kubproxy" {
-			kubeProxyDir = v.Dir
-		} else if v.Name == "controller-manager" {
-			contrDir = v.Dir
-		}
 	}
 
 	//generate ansible inventory
@@ -195,17 +216,6 @@ func main() {
 
 	// install etcd
 	log.Println("install etcd")
-
-	var dataDir string
-	var dir string
-	var etcdHostArray []string
-	for _, v := range config.K8s.Master.Components {
-		if v.Name == "etcd" {
-			dataDir = v.DataDir
-			dir = v.Dir
-			etcdHostArray = v.Hosts
-		}
-	}
 	etcd := pkg.Etcd{
 		DataDir:     dataDir,
 		Host:        etcdHostArray,
@@ -217,15 +227,6 @@ func main() {
 
 	// install apiServer
 	log.Println("install api-server")
-
-	var apiServerDir string
-	var apiServerHostArray []string
-	for _, v := range config.K8s.Master.Components {
-		if v.Name == "api-server" {
-			apiServerDir = v.Dir
-			apiServerHostArray = v.Hosts
-		}
-	}
 	apiserver := pkg.ApiServer{
 		Host:        apiServerHostArray,
 		Dir:         apiServerDir,
@@ -237,7 +238,6 @@ func main() {
 
 	// install controllerManager
 	log.Println("install controllerManager")
-
 	contr := pkg.ControllerManager{
 		Dir:         contrDir,
 		PodCIDR:     podCIDR,
@@ -247,13 +247,6 @@ func main() {
 
 	// install scheduler
 	log.Println("install scheduler")
-
-	var schedulerDir string
-	for _, v := range config.K8s.Master.Components {
-		if v.Name == "scheduler" {
-			schedulerDir = v.Dir
-		}
-	}
 	scheduler := pkg.Scheduler{
 		Dir:         schedulerDir,
 		DownloadDir: config.Packages.DownloadDir,
