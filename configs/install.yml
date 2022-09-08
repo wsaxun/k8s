@@ -50,10 +50,18 @@ k8s:
     serviceCIDR: 172.16.0.0/16
   certificate: 876000h
 
-docker:
+# docker 和 containerd 保留一个
+#docker:
+#  yumRepo: http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+#  dataRoot: /var/lib/docker
+#  registryMirrors: https://mvaav0ar.mirror.aliyuncs.com
+#  pod-infra-container-image: registry.aliyuncs.com/google_containers/pause:3.5
+
+containerd:
   yumRepo: http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
-  dataRoot: /var/lib/docker
-  registryMirrors: https://mvaav0ar.mirror.aliyuncs.com
+  dataRoot: /var/lib/containerd
+  registryMirrors:  https://mvaav0ar.mirror.aliyuncs.com
+  sandboxImage: registry.aliyuncs.com/google_containers/pause:3.5
 
 haproxy:
   hosts:

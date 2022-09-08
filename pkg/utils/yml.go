@@ -16,6 +16,7 @@ type Config struct {
 	Haproxy    Haproxy    `yaml:"haproxy"`
 	Keepalived Keepalived `yaml:"keepalived"`
 	Packages   Packages   `yaml:"packages"`
+	Containerd Containerd `yaml:"containerd"`
 }
 
 // Components
@@ -72,9 +73,18 @@ type Nodecomponents struct {
 
 // Docker
 type Docker struct {
+	YumRepo          string `yaml:"yumRepo"`
+	DataRoot         string `yaml:"dataRoot"`
+	RegistryMirrors  string `yaml:"registryMirrors"`
+	PodInfraCtrImage string `yaml:"pod-infra-container-image"`
+}
+
+// Containerd
+type Containerd struct {
 	YumRepo         string `yaml:"yumRepo"`
 	DataRoot        string `yaml:"dataRoot"`
 	RegistryMirrors string `yaml:"registryMirrors"`
+	SandboxImage    string `yaml:"sandboxImage"`
 }
 
 // Haproxy

@@ -7,9 +7,11 @@ import (
 
 type Kubelet struct {
 	utils.K8SSoftware
-	CoreDns     string
-	Dir         string
-	DownloadDir string
+	CoreDns          string
+	Dir              string
+	DownloadDir      string
+	PodInfraCtrImage string
+	Flag             bool
 }
 
 func (k *Kubelet) Install(host string, inventory string, fs embed.FS) {
@@ -35,6 +37,12 @@ func (k *Kubelet) Install(host string, inventory string, fs embed.FS) {
 func (k *Kubelet) config(fs embed.FS) {
 	context, _ := fs.ReadFile("template/softwareConfig/kubelet-config.yml")
 	utils.Render(k, string(context), "kubelet-config.yml")
+
+	if len(k.PodInfraCtrImage) > 0 {
+		k.Flag = true
+	} else {
+		k.Flag = false
+	}
 	service, _ := fs.ReadFile("template/softwareConfig/kubelet.service")
 	utils.Render(k, string(service), "kubelet.service")
 }

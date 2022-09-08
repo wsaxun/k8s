@@ -52,43 +52,41 @@ func main() {
 		}
 	}
 
-	//
-	yumRepo := config.Docker.YumRepo
-	dataRoot := config.Docker.DataRoot
-	mirror := config.Docker.RegistryMirrors
+	// 根据podInfraCtrImage字符串长度判断cri使用docker还是containerd的条件
+	podInfraCtrImage := config.Docker.PodInfraCtrImage
+
 	docker := pkg.Docker{
-		YumRepo:         yumRepo,
-		DataRoot:        dataRoot,
-		RegistryMirrors: mirror,
+		YumRepo:         config.Docker.YumRepo,
+		DataRoot:        config.Docker.DataRoot,
+		RegistryMirrors: config.Docker.RegistryMirrors,
 	}
+
+	containerd := pkg.Containerd{
+		YumRepo:         config.Containerd.YumRepo,
+		DataRoot:        config.Containerd.DataRoot,
+		RegistryMirrors: config.Containerd.RegistryMirrors,
+		SandboxImage:    config.Containerd.SandboxImage,
+	}
+
 	var dns string
 	var kubeletDir string
+	var podCIDR string
+	var kubeProxyDir string
+	var contrDir string
 	for _, v := range config.K8s.Plugin {
 		if v.Name == "coreDns" {
 			dns = v.Dns
+		} else if v.Name == "calico" {
+			podCIDR = v.PodCIDR
 		}
 	}
 	for _, v := range config.K8s.Node.Components {
 		if v.Name == "kubelet" {
 			kubeletDir = v.Dir
-		}
-	}
-	var kubeProxyDir string
-	for _, v := range config.K8s.Node.Components {
-		if v.Name == "kubproxy" {
+		} else if v.Name == "kubproxy" {
 			kubeProxyDir = v.Dir
-		}
-	}
-	var contrDir string
-	var podCIDR string
-	for _, v := range config.K8s.Master.Components {
-		if v.Name == "controller-manager" {
+		} else if v.Name == "controller-manager" {
 			contrDir = v.Dir
-		}
-	}
-	for _, v := range config.K8s.Plugin {
-		if v.Name == "calico" {
-			podCIDR = v.PodCIDR
 		}
 	}
 
@@ -103,14 +101,20 @@ func main() {
 		log.Println("init node computer")
 		pkg.InitNodeEnv("increment", inventory, TEMPLATE)
 
-		log.Println("install docker")
-		docker.Install("increment", inventory, TEMPLATE)
+		if len(podInfraCtrImage) > 0 {
+			log.Println("install docker")
+			docker.Install("increment", inventory, TEMPLATE)
+		} else {
+			log.Println("install containerd")
+			containerd.Install("increment", inventory, TEMPLATE)
+		}
 
 		log.Println("install kubelet")
 		kubelet := pkg.Kubelet{
-			CoreDns:     dns,
-			Dir:         kubeletDir,
-			DownloadDir: softwareDownloadDir,
+			CoreDns:          dns,
+			Dir:              kubeletDir,
+			DownloadDir:      softwareDownloadDir,
+			PodInfraCtrImage: podInfraCtrImage,
 		}
 		kubelet.Install("increment", inventory, TEMPLATE)
 
@@ -156,10 +160,16 @@ func main() {
 	log.Println("init node computer")
 	pkg.InitNodeEnv("node", inventory, TEMPLATE)
 
-	// install docker
-	log.Println("install docker")
-	docker.Install("master", inventory, TEMPLATE)
-	docker.Install("node", inventory, TEMPLATE)
+	if len(podInfraCtrImage) > 0 {
+		// install docker
+		log.Println("install docker")
+		docker.Install("master", inventory, TEMPLATE)
+		docker.Install("node", inventory, TEMPLATE)
+	} else {
+		// install containerd
+		log.Println("install containerd")
+		containerd.Install("increment", inventory, TEMPLATE)
+	}
 
 	// install haproxy
 	log.Println("install haproxy")
@@ -264,9 +274,10 @@ func main() {
 	// install kubelet
 	log.Println("install kubelet")
 	kubelet := pkg.Kubelet{
-		CoreDns:     dns,
-		Dir:         kubeletDir,
-		DownloadDir: softwareDownloadDir,
+		CoreDns:          dns,
+		Dir:              kubeletDir,
+		DownloadDir:      softwareDownloadDir,
+		PodInfraCtrImage: podInfraCtrImage,
 	}
 	kubelet.Install("kubernetes", inventory, TEMPLATE)
 
@@ -281,10 +292,10 @@ func main() {
 	}
 	kubeProxy.Install("kubernetes", inventory, TEMPLATE)
 
+	// install plugin
 	var calicoUrl string
 	var flannelUrl string
 	networkLock := false
-	// install plugin
 	for _, v := range config.K8s.Plugin {
 		if v.Name == "calico" {
 			// install calico

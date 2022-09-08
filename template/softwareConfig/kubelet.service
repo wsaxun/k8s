@@ -11,7 +11,13 @@ RestartSec=10
 
 Environment="KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.kubeconfig --kubeconfig=/etc/kubernetes/kubelet.kubeconfig"
 Environment="KUBELET_SYSTEM_ARGS=--network-plugin=cni --cni-conf-dir=/etc/cni/net.d --cni-bin-dir=/opt/cni/bin"
-Environment="KUBELET_CONFIG_ARGS=--config={{.Dir}}/kubelet-config.yml --pod-infra-container-image=registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.5"
+{{if .Flag}}
+# docker
+Environment="KUBELET_CONFIG_ARGS=--config={{.Dir}}/kubelet-config.yml --pod-infra-container-image={{.PodInfraCtrImage}}"
+{{else}}
+# containerd
+Environment="KUBELET_CONFIG_ARGS=--config={{.Dir}}/kubelet-config.yml  --container-runtime=remote --runtime-request-timeout=15m --container-runtime-endpoint=unix:///run/containerd/containerd.sock"
+{{end}}
 Environment="KUBELET_EXTRA_ARGS=--node-labels=node.kubernetes.io/node='' "
 Environment="KUBELET_LOG_ARGS=--logtostderr=false --log-dir={{.Dir}}/log --log-file-max-size=100"
 
