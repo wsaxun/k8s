@@ -1,9 +1,12 @@
 [Unit]
 Description=Kubernetes Kubelet
 Documentation=https://github.com/kubernetes/kubernetes
+{{- if .Flag}}
 After=docker.service
 Requires=docker.service
-
+{{- else}}
+Requires=containerd.service
+{{- end}}
 [Service]
 Restart=always
 StartLimitInterval=0
@@ -11,13 +14,13 @@ RestartSec=10
 
 Environment="KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.kubeconfig --kubeconfig=/etc/kubernetes/kubelet.kubeconfig"
 Environment="KUBELET_SYSTEM_ARGS=--network-plugin=cni --cni-conf-dir=/etc/cni/net.d --cni-bin-dir=/opt/cni/bin"
-{{if .Flag}}
+{{- if .Flag}}
 # docker
 Environment="KUBELET_CONFIG_ARGS=--config={{.Dir}}/kubelet-config.yml --pod-infra-container-image={{.PodInfraCtrImage}}"
-{{else}}
+{{- else}}
 # containerd
 Environment="KUBELET_CONFIG_ARGS=--config={{.Dir}}/kubelet-config.yml  --container-runtime=remote --runtime-request-timeout=15m --container-runtime-endpoint=unix:///run/containerd/containerd.sock"
-{{end}}
+{{- end}}
 Environment="KUBELET_EXTRA_ARGS=--node-labels=node.kubernetes.io/node='' "
 Environment="KUBELET_LOG_ARGS=--logtostderr=false --log-dir={{.Dir}}/log --log-file-max-size=100"
 
