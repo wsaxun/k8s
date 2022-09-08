@@ -71,7 +71,7 @@ func main() {
 	for _, v := range config.K8s.Plugin {
 		if v.Name == "coreDns" {
 			dns = v.Dns
-		} else if v.Name == "calico" {
+		} else if v.Name == "calico" || v.Name == "flannel" {
 			podCIDR = v.PodCIDR
 		}
 	}
