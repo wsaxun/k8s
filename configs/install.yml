@@ -50,7 +50,9 @@ k8s:
     serviceCIDR: 172.16.0.0/16
   certificate: 876000h
 
+# k8s v1.24.0 版本后不支持dockershim
 # docker 和 containerd 保留一个
+
 #docker:
 #  yumRepo: http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
 #  dataRoot: /var/lib/docker
