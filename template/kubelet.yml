@@ -65,6 +65,7 @@
         state: stoped
       ignore_errors: yes
     - name: rm /var/lib/kubelet
+      file:
         path: /var/lib/kubelet
         state: absent
       ignore_errors: yes
