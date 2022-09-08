@@ -281,28 +281,44 @@ func main() {
 	}
 	kubeProxy.Install("kubernetes", inventory, TEMPLATE)
 
-	// install calico
-	log.Println("install calico")
-
 	var calicoUrl string
+	var flannelUrl string
+	networkLock := false
+	// install plugin
 	for _, v := range config.K8s.Plugin {
 		if v.Name == "calico" {
+			// install calico
+			log.Println("install calico")
 			calicoUrl = v.CalicoUrl
+			calico := pkg.Calico{
+				DownloadDir: softwareDownloadDir,
+				Url:         calicoUrl,
+				PodCIDR:     podCIDR,
+			}
+			calico.Install()
+			networkLock = true
+		} else if v.Name == "flannel" {
+			// install flannel
+			if networkLock {
+				// 预防填写了两个网络插件时候，选择calico
+				continue
+			}
+			log.Println("install flannel")
+			flannelUrl = v.FlannelUrl
+			flannel := pkg.Flannel{
+				DownloadDir: softwareDownloadDir,
+				Url:         flannelUrl,
+				PodCIDR:     podCIDR,
+			}
+			flannel.Install()
+		} else if v.Name == "coreDns" {
+			// install coredns
+			log.Println("install coreDns")
+			coredns := pkg.CoreDns{
+				Dns:         dns,
+				DownloadDir: softwareDownloadDir,
+			}
+			coredns.Install(TEMPLATE)
 		}
 	}
-	calico := pkg.Calico{
-		DownloadDir: softwareDownloadDir,
-		Url:         calicoUrl,
-		PodCIDR:     podCIDR,
-	}
-	calico.Install()
-
-	// install coredns
-	log.Println("install coreDns")
-
-	coredns := pkg.CoreDns{
-		Dns:         dns,
-		DownloadDir: softwareDownloadDir,
-	}
-	coredns.Install(TEMPLATE)
 }

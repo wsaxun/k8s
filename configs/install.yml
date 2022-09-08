@@ -39,9 +39,13 @@ k8s:
   plugin:
     - name: coreDns
       dns: 172.16.0.10
-    - name: calico
+#    如果使用calico插件，注释掉flannel部分，反之亦然
+#    - name: calico
+#      podCIDR: 10.100.0.0/16
+#      calicoUrl: https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/calico-typha.yaml
+    - name: flannel
       podCIDR: 10.100.0.0/16
-      calicoUrl: https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/calico-typha.yaml
+      flannelUrl: https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
   CIDR:
     serviceCIDR: 172.16.0.0/16
   certificate: 876000h
