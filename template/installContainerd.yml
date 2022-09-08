@@ -10,6 +10,11 @@
         name:
           - containerd.io
         state: present
+    - name: mkdir {{.DataRoot}}
+      file:
+        path: {{.DataRoot}}
+        state: directory
+        mode: '0755'
     - name: genrate config
       shell:
         cmd: |
