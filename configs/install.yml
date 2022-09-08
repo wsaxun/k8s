@@ -52,18 +52,17 @@ k8s:
 
 # k8s v1.24.0 版本后不支持dockershim
 # docker 和 containerd 保留一个
-
-#docker:
-#  yumRepo: http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
-#  dataRoot: /var/lib/docker
-#  registryMirrors: https://mvaav0ar.mirror.aliyuncs.com
-#  pod-infra-container-image: registry.aliyuncs.com/google_containers/pause:3.5
-
-containerd:
-  yumRepo: http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
-  dataRoot: /var/lib/containerd
-  registryMirrors:  https://mvaav0ar.mirror.aliyuncs.com
-  sandboxImage: registry.aliyuncs.com/google_containers/pause:3.5
+cri:
+#  docker:
+#    yumRepo: http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+#    dataRoot: /var/lib/docker
+#    registryMirrors: https://mvaav0ar.mirror.aliyuncs.com
+#    pod-infra-container-image: registry.aliyuncs.com/google_containers/pause:3.5
+  containerd:
+    yumRepo: http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+    dataRoot: /var/lib/containerd
+    registryMirrors:  https://mvaav0ar.mirror.aliyuncs.com
+    sandboxImage: registry.aliyuncs.com/google_containers/pause:3.5
 
 haproxy:
   hosts:

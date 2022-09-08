@@ -53,19 +53,19 @@ func main() {
 	}
 
 	// 根据podInfraCtrImage字符串长度判断cri使用docker还是containerd的条件
-	podInfraCtrImage := config.Docker.PodInfraCtrImage
+	podInfraCtrImage := config.CRI.Docker.PodInfraCtrImage
 
 	docker := pkg.Docker{
-		YumRepo:         config.Docker.YumRepo,
-		DataRoot:        config.Docker.DataRoot,
-		RegistryMirrors: config.Docker.RegistryMirrors,
+		YumRepo:         config.CRI.Docker.YumRepo,
+		DataRoot:        config.CRI.Docker.DataRoot,
+		RegistryMirrors: config.CRI.Docker.RegistryMirrors,
 	}
 
 	containerd := pkg.Containerd{
-		YumRepo:         config.Containerd.YumRepo,
-		DataRoot:        config.Containerd.DataRoot,
-		RegistryMirrors: config.Containerd.RegistryMirrors,
-		SandboxImage:    config.Containerd.SandboxImage,
+		YumRepo:         config.CRI.Containerd.YumRepo,
+		DataRoot:        config.CRI.Containerd.DataRoot,
+		RegistryMirrors: config.CRI.Containerd.RegistryMirrors,
+		SandboxImage:    config.CRI.Containerd.SandboxImage,
 	}
 
 	var dns string

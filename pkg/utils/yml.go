@@ -12,11 +12,16 @@ var AnsibleCache = "/tmp/"
 // Default
 type Config struct {
 	K8s        K8s        `yaml:"k8s"`
-	Docker     Docker     `yaml:"docker"`
 	Haproxy    Haproxy    `yaml:"haproxy"`
 	Keepalived Keepalived `yaml:"keepalived"`
 	Packages   Packages   `yaml:"packages"`
+	CRI        CRI        `yaml:"cri"`
+}
+
+// CRI
+type CRI struct {
 	Containerd Containerd `yaml:"containerd"`
+	Docker     Docker     `yaml:"docker"`
 }
 
 // Components
