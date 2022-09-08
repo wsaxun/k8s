@@ -45,20 +45,21 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	var (
+		dns                string
+		kubeletDir         string
+		podCIDR            string
+		kubeProxyDir       string
+		contrDir           string
+		apiServerDir       string
+		apiServerHostArray []string
+		etcdDataDir        string
+		etcdDir            string
+		etcdHostArray      []string
+		schedulerDir       string
+		etcdName           string
+	)
 	// 根据podInfraCtrImage字符串长度判断cri使用docker还是containerd的条件
-	var dns string
-	var kubeletDir string
-	var podCIDR string
-	var kubeProxyDir string
-	var contrDir string
-	var apiServerDir string
-	var apiServerHostArray []string
-	var dataDir string
-	var dir string
-	var etcdHostArray []string
-	var schedulerDir string
-	var etcdName string
-
 	podInfraCtrImage := config.CRI.Docker.PodInfraCtrImage
 
 	for _, v := range urls {
@@ -90,8 +91,8 @@ func main() {
 		} else if v.Name == "controller-manager" {
 			contrDir = v.Dir
 		} else if v.Name == "etcd" {
-			dataDir = v.DataDir
-			dir = v.Dir
+			etcdDataDir = v.DataDir
+			etcdDir = v.Dir
 			etcdHostArray = v.Hosts
 		} else if v.Name == "scheduler" {
 			schedulerDir = v.Dir
@@ -217,9 +218,9 @@ func main() {
 	// install etcd
 	log.Println("install etcd")
 	etcd := pkg.Etcd{
-		DataDir:     dataDir,
+		DataDir:     etcdDataDir,
 		Host:        etcdHostArray,
-		Dir:         dir,
+		Dir:         etcdDir,
 		DownloadDir: config.Packages.DownloadDir,
 		EtcdName:    etcdName,
 	}

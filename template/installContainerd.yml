@@ -20,7 +20,7 @@
         cmd: |
           containerd config default > /etc/containerd/config.toml
           sed -i 's@root = "/var/lib/containerd"@root = "{{.DataRoot}}"@g' /etc/containerd/config.toml
-          sed -i 's@systemd_cgroup = false@systemd_cgroup = true@g' /etc/containerd/config.toml
+          sed -i 's@SystemdCgroup = false@SystemdCgroup = true@g' /etc/containerd/config.toml
           sed -i 's@sandbox_image = ".*"@sandbox_image = "{{.SandboxImage}}"@g' /etc/containerd/config.toml
           sed -i '/\[plugins."io.containerd.grpc.v1.cri".registry.mirrors\]/a [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]' /etc/containerd/config.toml
           sed -i '/\[plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"\]/a endpoint = \["{{.RegistryMirrors}}}"\]' /etc/containerd/config.toml
