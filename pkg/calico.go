@@ -28,6 +28,9 @@ func (c *Calico) Install() {
 	utils.Cmd("bash", "-c", cmd)
 	cmd = "cd " + c.DownloadDir + ` &&sed -i 's@#   value: "192.168.0.0/16"@  value: "` + c.PodCIDR + `"@g' calico-private.yml`
 	utils.Cmd("bash", "-c", cmd)
+	// 旧版本calico.yml 为   value: "192.168.0.0/16"，无 # 号
+	cmd = "cd " + c.DownloadDir + ` &&sed -i 's@"192.168.0.0/16"@"` + c.PodCIDR + `"@g' calico-private.yml`
+	utils.Cmd("bash", "-c", cmd)
 
 	cmd = "cd " + c.DownloadDir + ` &&sed -i 's@docker.io@quay.io@g' calico-private.yml`
 	utils.Cmd("bash", "-c", cmd)
