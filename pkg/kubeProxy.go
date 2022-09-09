@@ -45,7 +45,7 @@ func (p *Proxy) kubeConfig(inventory string, fs embed.FS, genKubConfFlag bool) {
 	if !genKubConfFlag {
 		return
 	}
-	cmd := p.DownloadDir + "/kubectl " + "-n kube-system create serviceaccount kube-proxy"
+	cmd := p.DownloadDir + "/kubectl -n kube-system create serviceaccount kube-proxy"
 	utils.Cmd("bash", "-c", cmd)
 	time.Sleep(30 * time.Second)
 	cmd = p.DownloadDir + "/kubectl create clusterrolebinding system:kube-proxy --clusterrole system:node-proxier --serviceaccount kube-system:kube-proxy"
