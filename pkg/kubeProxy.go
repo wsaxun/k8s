@@ -48,9 +48,10 @@ func (p *Proxy) kubeConfig(inventory string, fs embed.FS) {
 	}
 	cmd := p.DownloadDir + "/kubectl " + "-n kube-system create serviceaccount kube-proxy"
 	utils.Cmd("bash", "-c", cmd)
+	time.Sleep(10 * time.Second)
 	cmd = p.DownloadDir + "/kubectl create clusterrolebinding system:kube-proxy --clusterrole system:node-proxier --serviceaccount kube-system:kube-proxy"
 	utils.Cmd("bash", "-c", cmd)
-	time.Sleep(60 * time.Second)
+	time.Sleep(30 * time.Second)
 	cmd = p.DownloadDir + `/kubectl -n kube-system get sa/kube-proxy --output=jsonpath='{.secrets[0].name}'`
 	secrete := utils.Cmd("bash", "-c", cmd)
 	cmd = p.DownloadDir + `/kubectl -n kube-system get secret/` + secrete + `   --output=jsonpath='{.data.token}' | /usr/bin/base64 -d`
