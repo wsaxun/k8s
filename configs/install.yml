@@ -79,6 +79,8 @@ keepalived:
   vip: 192.168.58.110
   interface: ens33
 
+# 如果手工下载的时，请确保下文件和此yml定义url中名称一致，如
+# https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 的文件名为 cfssl_linux-amd64
 packages:
   downloadDir: /tmp/packages
   url:
