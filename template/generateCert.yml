@@ -9,6 +9,8 @@
       file:
         path: {{.DownloadDir}}/kubernetes/pki/etcd
         state: directory
+    - name: chmod +x cfssl
+      shell: chmod +x {{.DownloadDir}}/cfssl*
     - name: generate etcd cert
       shell:
         cmd: |
