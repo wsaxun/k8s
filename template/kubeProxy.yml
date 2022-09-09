@@ -12,7 +12,7 @@
       copy:
         src: {{.DownloadDir}}/kube-proxy
         dest: {{.Dir}}
-        mode: "0755"
+        mode: u+x
     - name: create kube-proxy service
       copy:
         src: {{GetCache}}/kube-proxy.service

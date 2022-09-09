@@ -16,7 +16,7 @@
       copy:
         src: {{.DownloadDir}}/kube-apiserver
         dest: {{.Dir}}
-        mode: '0755'
+        mode: u+x
 {{range $i, $v :=  .AllHost}}
 - hosts: {{$v}}
   remote_user: root

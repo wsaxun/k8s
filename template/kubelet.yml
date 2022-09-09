@@ -12,7 +12,7 @@
       copy:
         src: {{.DownloadDir}}/kubelet
         dest: {{.Dir}}
-        mode: "0755"
+        mode: u+x
     - name: create kubelet service
       copy:
         src: {{GetCache}}/kubelet.service

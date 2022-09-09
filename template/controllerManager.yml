@@ -16,7 +16,7 @@
       copy:
         src: {{.DownloadDir}}/kube-controller-manager
         dest: {{.Dir}}
-        mode: '0755'
+        mode: u+x
     - name: create kube-controller-manager service
       copy:
         src: {{GetCache}}/kube-controller-manager.service
