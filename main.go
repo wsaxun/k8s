@@ -116,6 +116,29 @@ func main() {
 	log.Println("generate ansible hosts")
 	inventory := pkg.Inventory(config, TEMPLATE)
 
+	// kubelet kube-proxy
+	installNodeCompents := func(hosts, inventory string, fs embed.FS, flag bool) {
+		log.Println("install kubelet")
+		kubelet := pkg.Kubelet{
+			CoreDns:          dns,
+			Dir:              kubeletDir,
+			DownloadDir:      softwareDownloadDir,
+			PodInfraCtrImage: podInfraCtrImage,
+		}
+		kubelet.Install(hosts, inventory, fs)
+
+		// install kube-proxy
+		log.Println("install kube-haproxy")
+		kubeProxy := pkg.Proxy{
+			Vip:         config.Keepalived.Vip,
+			Port:        config.Haproxy.FrontendPort,
+			Dir:         kubeProxyDir,
+			DownloadDir: softwareDownloadDir,
+			PodCIDR:     podCIDR,
+		}
+		kubeProxy.Install(hosts, inventory, fs, flag)
+	}
+
 	// node 部署
 	if cmdOption.InstallType == "node" {
 		inventory := pkg.IncrementInventory(config, TEMPLATE)
@@ -131,25 +154,7 @@ func main() {
 			containerd.Install("increment", inventory, TEMPLATE)
 		}
 
-		log.Println("install kubelet")
-		kubelet := pkg.Kubelet{
-			CoreDns:          dns,
-			Dir:              kubeletDir,
-			DownloadDir:      softwareDownloadDir,
-			PodInfraCtrImage: podInfraCtrImage,
-		}
-		kubelet.Install("increment", inventory, TEMPLATE)
-
-		// install kube-proxy
-		log.Println("install kube-haproxy")
-		kubeProxy := pkg.Proxy{
-			Vip:         config.Keepalived.Vip,
-			Port:        config.Haproxy.FrontendPort,
-			Dir:         kubeProxyDir,
-			DownloadDir: softwareDownloadDir,
-			PodCIDR:     podCIDR,
-		}
-		kubeProxy.Install("increment", inventory, TEMPLATE)
+		installNodeCompents("increment", inventory, TEMPLATE, false)
 		os.Exit(0)
 	} else if cmdOption.InstallType != "k8s" {
 		log.Fatal("cmd option error")
@@ -264,26 +269,8 @@ func main() {
 	}
 	bootstrap.Install("127.0.0.1", inventory, TEMPLATE)
 
-	// install kubelet
-	log.Println("install kubelet")
-	kubelet := pkg.Kubelet{
-		CoreDns:          dns,
-		Dir:              kubeletDir,
-		DownloadDir:      softwareDownloadDir,
-		PodInfraCtrImage: podInfraCtrImage,
-	}
-	kubelet.Install("kubernetes", inventory, TEMPLATE)
-
-	// install kube-proxy
-	log.Println("install kube-haproxy")
-	kubeProxy := pkg.Proxy{
-		Vip:         config.Keepalived.Vip,
-		Port:        config.Haproxy.FrontendPort,
-		Dir:         kubeProxyDir,
-		DownloadDir: softwareDownloadDir,
-		PodCIDR:     podCIDR,
-	}
-	kubeProxy.Install("kubernetes", inventory, TEMPLATE)
+	// install node
+	installNodeCompents("kubernetes", inventory, TEMPLATE, true)
 
 	// install plugin
 	var calicoUrl string

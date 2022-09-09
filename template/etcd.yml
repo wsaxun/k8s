@@ -50,7 +50,7 @@
       file:
         path: {{.DataDir}}
         state: directory
-{{range $i, $v :=  .AllHost}}
+{{- range $i, $v :=  .AllHost}}
 - hosts: {{$v}}
   remote_user: root
   gather_facts: no                                        # 默认执行setup模块，禁用此setup选项
@@ -65,4 +65,8 @@
         state: started
         enabled: yes
       ignore_errors: yes
-{{end}}
+    - name: rm -rf /tmp/etcd-*
+      shell:
+        cmd: |
+          rm -rf  /tmp/etcd-*
+{{- end}}

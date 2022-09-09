@@ -3,7 +3,6 @@ package pkg
 import (
 	"embed"
 	"k8s/pkg/utils"
-	"path/filepath"
 	"time"
 )
 
@@ -16,8 +15,8 @@ type Proxy struct {
 	PodCIDR     string
 }
 
-func (p *Proxy) Install(host string, inventory string, fs embed.FS) {
-	p.config(inventory, fs)
+func (p *Proxy) Install(host string, inventory string, fs embed.FS, genKubConfFlag bool) {
+	p.config(inventory, fs, genKubConfFlag)
 	ymlName := "kubeProxy.yml"
 	yml, _ := fs.ReadFile("template/" + ymlName)
 	type info struct {
@@ -34,16 +33,16 @@ func (p *Proxy) Install(host string, inventory string, fs embed.FS) {
 	utils.Playbook(path, inventory)
 }
 
-func (p *Proxy) config(inventory string, fs embed.FS) {
-	p.kubeConfig(inventory, fs)
+func (p *Proxy) config(inventory string, fs embed.FS, genKubConfFlag bool) {
+	p.kubeConfig(inventory, fs, genKubConfFlag)
 	context, _ := fs.ReadFile("template/softwareConfig/kube-proxy.service")
 	utils.Render(p, string(context), "kube-proxy.service")
 	service, _ := fs.ReadFile("template/softwareConfig/kube-proxy.config.yml")
 	utils.Render(p, string(service), "kube-proxy.config.yml")
 }
 
-func (p *Proxy) kubeConfig(inventory string, fs embed.FS) {
-	if utils.PathIsExist(filepath.Join(utils.GetCache(), "kubeProxyKubeConfig.yml")) {
+func (p *Proxy) kubeConfig(inventory string, fs embed.FS, genKubConfFlag bool) {
+	if !genKubConfFlag {
 		return
 	}
 	cmd := p.DownloadDir + "/kubectl " + "-n kube-system create serviceaccount kube-proxy"
