@@ -10,7 +10,6 @@ ExecStart={{.Dir}}/kube-apiserver \
       --allow-privileged=true  \
       --bind-address=0.0.0.0  \
       --secure-port=6443  \
-      --insecure-port=0  \
       --advertise-address={{.LocalHost}} \
       --service-cluster-ip-range={{.ServiceCIDR}}  \
       --service-node-port-range=30000-32767  \
