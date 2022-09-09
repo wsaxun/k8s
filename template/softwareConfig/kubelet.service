@@ -24,7 +24,7 @@ Environment="KUBELET_CONFIG_ARGS=--config={{.Dir}}/kubelet-config.yml  --contain
 Environment="KUBELET_EXTRA_ARGS=--node-labels=node.kubernetes.io/node='' "
 Environment="KUBELET_LOG_ARGS=--logtostderr=false --log-dir={{.Dir}}/log --log-file-max-size=100"
 
-ExecStart={{.Dir}}/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_SYSTEM_ARGS $KUBELET_EXTRA_ARGS $KUBELET_LOG_ARGS
+ExecStart={{.Dir}}/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_EXTRA_ARGS $KUBELET_LOG_ARGS
 
 [Install]
 WantedBy=multi-user.target
