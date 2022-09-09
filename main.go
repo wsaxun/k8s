@@ -117,7 +117,7 @@ func main() {
 	inventory := pkg.Inventory(config, TEMPLATE)
 
 	// kubelet kube-proxy
-	installNodeCompents := func(hosts, inventory string, fs embed.FS, flag bool) {
+	installNodeCompents := func(hosts, inventory string, fs embed.FS) {
 		log.Println("install kubelet")
 		kubelet := pkg.Kubelet{
 			CoreDns:          dns,
@@ -136,7 +136,7 @@ func main() {
 			DownloadDir: softwareDownloadDir,
 			PodCIDR:     podCIDR,
 		}
-		kubeProxy.Install(hosts, inventory, fs, flag)
+		kubeProxy.Install(hosts, inventory, fs)
 	}
 
 	// node 部署
@@ -154,7 +154,7 @@ func main() {
 			containerd.Install("increment", inventory, TEMPLATE)
 		}
 
-		installNodeCompents("increment", inventory, TEMPLATE, false)
+		installNodeCompents("increment", inventory, TEMPLATE)
 		os.Exit(0)
 	} else if cmdOption.InstallType != "k8s" {
 		log.Fatal("cmd option error")
@@ -270,7 +270,7 @@ func main() {
 	bootstrap.Install("127.0.0.1", inventory, TEMPLATE)
 
 	// install node
-	installNodeCompents("kubernetes", inventory, TEMPLATE, true)
+	installNodeCompents("kubernetes", inventory, TEMPLATE)
 
 	// install plugin
 	var calicoUrl string
